@@ -1,10 +1,10 @@
 import React from 'react';
 import { createRoot } from 'react-dom/client';
-import BiodataDiri from './BioDataDiri';
-import '../App.css';
+import FormPendaftaran from './FormPendaftaran';
+import './tailwind.css';   // <-- Harus ada
 
 createRoot(document.getElementById('root')).render(
   <React.StrictMode>
-    <BiodataDiri />
+    <FormPendaftaran />
   </React.StrictMode>
 );
