@@ -3,10 +3,11 @@ import { FaBell, FaSearch, FaCommentAlt, FaGift, FaHistory, FaUserCircle } from 
 import { SlSettings } from "react-icons/sl";
 
 export default function Header() {
-  // 1. State Modal: Nilai awal FALSE (tertutup)
+  // 1. State Modal: nilai awal FALSE (tertutup)
   const [isSearchOpen, setIsSearchOpen] = useState(false);
 
   return (
+    // sticky top-0 = menempel di atas saat scroll
     <header className="flex justify-between items-center bg-white px-8 py-4 sticky top-0 z-40">
       
       {/* Search Bar Container */}
@@ -41,6 +42,7 @@ export default function Header() {
       {/* Icons & User Profile */}
       <div className="flex items-center gap-6">
         <div className="flex items-center gap-3 border-r pr-6 border-gray-200">
+          {/* Icon notifikasi dengan badge angka 21 */}
           <div className="relative p-3 bg-blue-50 rounded-2xl text-biru cursor-pointer hover:bg-blue-100 transition">
             <FaBell />
             <span className="absolute top-0 right-0 translate-x-1/3 -translate-y-1/3 bg-biru text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full border-2 border-white">

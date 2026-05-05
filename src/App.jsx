@@ -9,6 +9,7 @@ import ErrorPage from "./pages/ErrorPage";
 import NotFound from "./pages/NotFound";
 
 // Implementasi Lazy Loading untuk Pages Utama (Tema Hotel)
+// React.lazy() membuat komponen di-download hanya saat dibutuhkan, bukan di awal
 const Dashboard = React.lazy(() => import("./pages/Dashboard"));
 const Bookings = React.lazy(() => import("./pages/Bookings")); 
 const Guests = React.lazy(() => import("./pages/Guests"));     
@@ -20,12 +21,14 @@ const Forgot = React.lazy(() => import("./pages/auth/Forgot"));
 
 export default function App() {
   return (
-    // Suspense akan menampilkan komponen <Loading /> selama file halaman sedang di-download (lazy load)
+    // Suspense: menampilkan fallback (Loading) selama komponen lazy masih di-download
     <Suspense fallback={<Loading />}>
       <Routes>
         
         {/* === MAIN LAYOUT === */}
-        {/* Semua route di dalam sini otomatis akan dibungkus Sidebar dan Header */}
+        {/* Nested Routes: semua route di bawah ini akan dibungkus oleh <MainLayout/>.
+            <Outlet/> di dalam MainLayout akan diganti dengan Dashboard, Bookings, dll.
+            Ini membuat Sidebar & Header tidak reload saat pindah halaman. */}
         <Route element={<MainLayout />}>
           <Route path="/" element={<Dashboard />} />
           <Route path="/bookings" element={<Bookings />} />
@@ -33,7 +36,7 @@ export default function App() {
         </Route>
 
         {/* === AUTH LAYOUT === */}
-        {/* Semua route di dalam sini otomatis akan pakai background polos di tengah layar */}
+        {/* Layout khusus untuk halaman login/register: tengah layar, tanpa sidebar */}
         <Route element={<AuthLayout />}>
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
@@ -41,11 +44,12 @@ export default function App() {
         </Route>
 
         {/* === ERROR PAGES === */}
-        {/* Error pages tidak pakai layout apa-apa biar full screen */}
+        {/* Route tanpa layout, tampil full screen */}
         <Route path="/error-400" element={<ErrorPage code="400" description="Bad Request. Permintaan tidak dapat diproses." image="https://cdni.iconscout.com/illustration/premium/thumb/bad-request-4344458-3613886.png" />} />
         <Route path="/error-401" element={<ErrorPage code="401" description="Unauthorized. Kamu tidak memiliki akses ke sistem ini." image="https://cdni.iconscout.com/illustration/premium/thumb/unauthorized-access-4344456-3613884.png" />} />
         <Route path="/error-403" element={<ErrorPage code="403" description="Forbidden. Akses ditolak." image="https://cdni.iconscout.com/illustration/premium/thumb/forbidden-4344457-3613885.png" />} />
         
+        {/* path="*" artinya semua URL yang tidak cocok di atas akan menampilkan NotFound */}
         <Route path="*" element={<NotFound />} />
 
       </Routes>

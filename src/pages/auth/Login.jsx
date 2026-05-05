@@ -4,11 +4,11 @@ import axios from "axios";
 import { FaExclamationTriangle, FaSpinner } from "react-icons/fa";
 
 export default function Login() {
-    const navigate = useNavigate();
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState("");
+    const navigate = useNavigate();   // Untuk pindah halaman setelah sukses login
+    const [loading, setLoading] = useState(false);   // State untuk animasi loading & disable tombol
+    const [error, setError] = useState("");          // State untuk menyimpan pesan error
     
-    // 1. State untuk menyimpan ketikan user
+    // 1. State untuk menyimpan ketikan user (object dengan username & password)
     const [dataForm, setDataForm] = useState({
         username: "",
         password: "",
@@ -16,7 +16,8 @@ export default function Login() {
 
     // Fungsi untuk meng-update state setiap kali user mengetik
     const handleChange = (evt) => {
-        const { name, value } = evt.target;
+        const { name, value } = evt.target;   // name="username" atau "password"
+        // Spread operator: salin semua properti lama, lalu timpa properti [name] dengan value baru
         setDataForm({
             ...dataForm,
             [name]: value,
@@ -25,9 +26,9 @@ export default function Login() {
 
     // 2. Fungsi saat tombol login ditekan (Integrasi API)
     const handleSubmit = async (e) => {
-        e.preventDefault();
-        setLoading(true);
-        setError("");
+        e.preventDefault();   // Mencegah reload halaman
+        setLoading(true);     // Tampilkan spinner dan disable input
+        setError("");         // Bersihkan error lama
 
         // Hit API DummyJSON sesuai Modul P7
         axios.post("https://dummyjson.com/user/login", {
@@ -37,7 +38,7 @@ export default function Login() {
         })
         .then((response) => {
             if (response.status === 200) {
-                // Kalau sukses, pindah ke halaman Dashboard
+                // Kalau sukses, pindah ke halaman Dashboard (route "/")
                 navigate("/"); 
             }
         })
@@ -50,7 +51,7 @@ export default function Login() {
             }
         })
         .finally(() => {
-            setLoading(false);
+            setLoading(false);   // Matikan loading, baik sukses maupun gagal
         });
     };
 
@@ -60,7 +61,7 @@ export default function Login() {
                 Staff Login 👋
             </h2>
 
-         
+            {/* Jika state error tidak kosong, tampilkan alert merah */}
             {error && (
                 <div className="bg-red-50 mb-5 p-4 text-sm text-red-600 rounded-xl flex items-center border border-red-100">
                     <FaExclamationTriangle className="mr-3 text-lg" />
@@ -78,7 +79,7 @@ export default function Login() {
                         name="username"
                         value={dataForm.username}
                         onChange={handleChange}
-                        disabled={loading}
+                        disabled={loading}   // Saat loading, input tidak bisa diketik
                         className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 transition-all"
                         placeholder="Enter your username"
                         required
