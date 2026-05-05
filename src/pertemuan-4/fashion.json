@@ -1,0 +1,222 @@
+[
+  {
+    "id": 1,
+    "nama_produk": "Cyberpunk Baggy Jeans",
+    "kategori": "Bawahan",
+    "merk": "RetroVibe",
+    "deskripsi": "Celana jeans baggy oversize dengan banyak saku, terinspirasi dari gaya street fashion awal 2000-an yang ikonik.",
+    "gambar": "https://images.unsplash.com/photo-1541099649105-f69ad21f3246?auto=format&fit=crop&w=500&q=60",
+    "detail_produk": { "bahan": "Denim 14oz", "ukuran": ["M", "L", "XL"], "warna": "Washed Blue" },
+    "harga_stok": { "harga": 350000, "stok": 45, "status": "Tersedia" },
+    "ulasan": { "rating": 4.8, "jumlah_ulasan": 120, "rekomendasi": true }
+  },
+  {
+    "id": 2,
+    "nama_produk": "Oversized Graphic Baby Tee",
+    "kategori": "Atasan",
+    "merk": "Nostalgia",
+    "deskripsi": "Kaos crop top baby tee dengan sablon grafis bintang dan warna kontras yang mencolok.",
+    "gambar": "https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?auto=format&fit=crop&w=500&q=60",
+    "detail_produk": { "bahan": "Cotton Combed 30s", "ukuran": ["S", "M", "L"], "warna": "Hitam & Pink" },
+    "harga_stok": { "harga": 120000, "stok": 12, "status": "Hampir Habis" },
+    "ulasan": { "rating": 4.9, "jumlah_ulasan": 340, "rekomendasi": true }
+  },
+  {
+    "id": 3,
+    "nama_produk": "Chunky Platform Sneakers",
+    "kategori": "Sepatu",
+    "merk": "StepUp",
+    "deskripsi": "Sneakers dengan sol platform tebal, memberikan ilusi kaki lebih jenjang dengan sentuhan futuristik.",
+    "gambar": "https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?auto=format&fit=crop&w=500&q=60",
+    "detail_produk": { "bahan": "Kulit Sintetis Premium", "ukuran": ["37", "38", "39", "40"], "warna": "Silver Metallic" },
+    "harga_stok": { "harga": 550000, "stok": 0, "status": "Habis" },
+    "ulasan": { "rating": 4.7, "jumlah_ulasan": 89, "rekomendasi": false }
+  },
+  {
+    "id": 4,
+    "nama_produk": "Y2K Tinted Sunglasses",
+    "kategori": "Aksesoris",
+    "merk": "Visionary",
+    "deskripsi": "Kacamata dengan lensa berwarna biru transparan dan bingkai frameless yang sangat tren di era milenium.",
+    "gambar": "https://images.unsplash.com/photo-1572635196237-14b3f281503f?auto=format&fit=crop&w=500&q=60",
+    "detail_produk": { "bahan": "Polycarbonate", "ukuran": ["All Size"], "warna": "Ocean Blue" },
+    "harga_stok": { "harga": 150000, "stok": 100, "status": "Tersedia" },
+    "ulasan": { "rating": 4.5, "jumlah_ulasan": 50, "rekomendasi": true }
+  },
+  {
+    "id": 5,
+    "nama_produk": "Faux Fur Trim Cardigan",
+    "kategori": "Outerwear",
+    "merk": "Nostalgia",
+    "deskripsi": "Cardigan rajut lembut dengan aksen bulu sintetis di bagian kerah dan pergelangan tangan.",
+    "gambar": "https://images.unsplash.com/photo-1624206112918-f140f087f9b5?auto=format&fit=crop&w=500&q=60",
+    "detail_produk": { "bahan": "Wool Blend", "ukuran": ["S", "M"], "warna": "Lilac" },
+    "harga_stok": { "harga": 275000, "stok": 15, "status": "Tersedia" },
+    "ulasan": { "rating": 4.6, "jumlah_ulasan": 42, "rekomendasi": true }
+  },
+  {
+    "id": 6,
+    "nama_produk": "Parachute Cargo Pants",
+    "kategori": "Bawahan",
+    "merk": "RetroVibe",
+    "deskripsi": "Celana berbahan parasut yang ringan dengan potongan super wide, cocok untuk gaya gorpcore.",
+    "gambar": "https://images.unsplash.com/photo-1624378439575-d8705ad7ae80?auto=format&fit=crop&w=500&q=60",
+    "detail_produk": { "bahan": "Nylon Ripstop", "ukuran": ["L", "XL"], "warna": "Army Green" },
+    "harga_stok": { "harga": 320000, "stok": 30, "status": "Tersedia" },
+    "ulasan": { "rating": 4.7, "jumlah_ulasan": 210, "rekomendasi": true }
+  },
+  {
+    "id": 7,
+    "nama_produk": "Metallic Puffer Jacket",
+    "kategori": "Outerwear",
+    "merk": "Visionary",
+    "deskripsi": "Jaket gelembung dengan finishing metalik mengkilap untuk tampilan luar angkasa yang berani.",
+    "gambar": "https://images.unsplash.com/photo-1544441893-675973e31985?auto=format&fit=crop&w=500&q=60",
+    "detail_produk": { "bahan": "Polyester Metallic", "ukuran": ["M", "L"], "warna": "Champagne Gold" },
+    "harga_stok": { "harga": 680000, "stok": 8, "status": "Hampir Habis" },
+    "ulasan": { "rating": 4.9, "jumlah_ulasan": 15, "rekomendasi": true }
+  },
+  {
+    "id": 8,
+    "nama_produk": "Holographic Mini Backpack",
+    "kategori": "Aksesoris",
+    "merk": "StepUp",
+    "deskripsi": "Tas ransel mungil dengan efek pelangi saat terkena cahaya matahari.",
+    "gambar": "https://images.unsplash.com/photo-1622560480605-d83c853bc5c3?auto=format&fit=crop&w=500&q=60",
+    "detail_produk": { "bahan": "PVC Holographic", "ukuran": ["Small"], "warna": "Rainbow Silver" },
+    "harga_stok": { "harga": 195000, "stok": 25, "status": "Tersedia" },
+    "ulasan": { "rating": 4.4, "jumlah_ulasan": 67, "rekomendasi": true }
+  },
+  {
+    "id": 9,
+    "nama_produk": "Velvet Tracksuit Set",
+    "kategori": "Setelan",
+    "merk": "Nostalgia",
+    "deskripsi": "Satu set jaket dan celana berbahan beludru, gaya ikonik para selebriti tahun 2000-an.",
+    "gambar": "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&w=500&q=60",
+    "detail_produk": { "bahan": "Premium Velvet", "ukuran": ["M", "L"], "warna": "Hot Pink" },
+    "harga_stok": { "harga": 450000, "stok": 20, "status": "Tersedia" },
+    "ulasan": { "rating": 4.8, "jumlah_ulasan": 95, "rekomendasi": true }
+  },
+  {
+    "id": 10,
+    "nama_produk": "Beanie Hat Pastel",
+    "kategori": "Aksesoris",
+    "merk": "RetroVibe",
+    "deskripsi": "Topi rajut beanie dengan warna pastel lembut untuk melengkapi gaya streetwear santai.",
+    "gambar": "https://images.unsplash.com/photo-1576529598261-96e376f6aabb?q=80&w=880&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    "detail_produk": { "bahan": "Acrylic Knit", "ukuran": ["All Size"], "warna": "Mint Green" },
+    "harga_stok": { "harga": 75000, "stok": 50, "status": "Tersedia" },
+    "ulasan": { "rating": 4.6, "jumlah_ulasan": 110, "rekomendasi": true }
+  },
+  {
+    "id": 11,
+    "nama_produk": "Distressed Band Tee",
+    "kategori": "Atasan",
+    "merk": "RetroVibe",
+    "deskripsi": "Kaos band dengan efek robek-robek dan luntur alami untuk kesan vintage grunge.",
+    "gambar": "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&w=500&q=60",
+    "detail_produk": { "bahan": "Cotton 24s", "ukuran": ["L", "XL", "XXL"], "warna": "Acid Wash Grey" },
+    "harga_stok": { "harga": 185000, "stok": 40, "status": "Tersedia" },
+    "ulasan": { "rating": 4.7, "jumlah_ulasan": 156, "rekomendasi": true }
+  },
+  {
+    "id": 12,
+    "nama_produk": "Denim Mini Skirt",
+    "kategori": "Bawahan",
+    "merk": "Nostalgia",
+    "deskripsi": "Rok denim pendek dengan aksen lipit dan kancing perak di bagian depan.",
+    "gambar": "https://images.unsplash.com/photo-1582142306909-195724d33ffc?auto=format&fit=crop&w=500&q=60",
+    "detail_produk": { "bahan": "Stretch Denim", "ukuran": ["S", "M"], "warna": "Light Blue" },
+    "harga_stok": { "harga": 210000, "stok": 18, "status": "Tersedia" },
+    "ulasan": { "rating": 4.5, "jumlah_ulasan": 82, "rekomendasi": true }
+  },
+  {
+    "id": 13,
+    "nama_produk": "Platform Combat Boots",
+    "kategori": "Sepatu",
+    "merk": "StepUp",
+    "deskripsi": "Sepatu boots tinggi dengan tali dan sol tebal, memberikan kesan tangguh dan modis.",
+    "gambar": "https://images.unsplash.com/photo-1638247025967-b4e38f787b76?auto=format&fit=crop&w=500&q=60",
+    "detail_produk": { "bahan": "Vegan Leather", "ukuran": ["39", "40", "41"], "warna": "Jet Black" },
+    "harga_stok": { "harga": 590000, "stok": 5, "status": "Hampir Habis" },
+    "ulasan": { "rating": 4.8, "jumlah_ulasan": 134, "rekomendasi": true }
+  },
+  {
+    "id": 14,
+    "nama_produk": "Tie-Dye Hoodie",
+    "kategori": "Outerwear",
+    "merk": "RetroVibe",
+    "deskripsi": "Hoodie dengan motif tie-dye abstrak yang unik di setiap potongannya.",
+    "gambar": "https://images.unsplash.com/photo-1620799140188-3b2a02fd9a77?auto=format&fit=crop&w=500&q=60",
+    "detail_produk": { "bahan": "Fleece Cotton", "ukuran": ["M", "L", "XL"], "warna": "Spiral Pastel" },
+    "harga_stok": { "harga": 315000, "stok": 22, "status": "Tersedia" },
+    "ulasan": { "rating": 4.6, "jumlah_ulasan": 48, "rekomendasi": true }
+  },
+  {
+    "id": 15,
+    "nama_produk": "Rhinestone Bucket Hat",
+    "kategori": "Aksesoris",
+    "merk": "Visionary",
+    "deskripsi": "Topi bucket dengan hiasan permata kecil yang membentuk pola berlian.",
+    "gambar": "https://images.unsplash.com/photo-1521369909029-2afed882baee?auto=format&fit=crop&w=500&q=60",
+    "detail_produk": { "bahan": "Canvas", "ukuran": ["All Size"], "warna": "White Silver" },
+    "harga_stok": { "harga": 145000, "stok": 35, "status": "Tersedia" },
+    "ulasan": { "rating": 4.3, "jumlah_ulasan": 29, "rekomendasi": false }
+  },
+  {
+    "id": 16,
+    "nama_produk": "Sheer Mesh Top",
+    "kategori": "Atasan",
+    "merk": "Visionary",
+    "deskripsi": "Atasan transparan berbahan mesh dengan motif api, cocok sebagai layer dalam bergaya.",
+    "gambar": "https://images.unsplash.com/photo-1620799140408-edc6dcb6d633?auto=format&fit=crop&w=500&q=60",
+    "detail_produk": { "bahan": "Polyester Mesh", "ukuran": ["S", "M", "L"], "warna": "Black Flame" },
+    "harga_stok": { "harga": 130000, "stok": 50, "status": "Tersedia" },
+    "ulasan": { "rating": 4.7, "jumlah_ulasan": 112, "rekomendasi": true }
+  },
+  {
+    "id": 17,
+    "nama_produk": "Corduroy Dungarees",
+    "kategori": "Setelan",
+    "merk": "RetroVibe",
+    "deskripsi": "Baju monyet berbahan korduroi tekstur garis yang memberikan kesan retro 90-an.",
+    "gambar": "https://images.unsplash.com/photo-1584370848010-d7fe6bc767ec?auto=format&fit=crop&w=500&q=60",
+    "detail_produk": { "bahan": "Corduroy", "ukuran": ["M", "L"], "warna": "Mustard Yellow" },
+    "harga_stok": { "harga": 380000, "stok": 12, "status": "Tersedia" },
+    "ulasan": { "rating": 4.5, "jumlah_ulasan": 34, "rekomendasi": true }
+  },
+  {
+    "id": 18,
+    "nama_produk": "Leather Biker Jacket",
+    "kategori": "Outerwear",
+    "merk": "StepUp",
+    "deskripsi": "Jaket kulit model biker dengan detail ritsleting banyak untuk gaya edgy.",
+    "gambar": "https://images.unsplash.com/photo-1551028719-00167b16eac5?auto=format&fit=crop&w=500&q=60",
+    "detail_produk": { "bahan": "Genuine Leather", "ukuran": ["L", "XL"], "warna": "Deep Brown" },
+    "harga_stok": { "harga": 1200000, "stok": 3, "status": "Hampir Habis" },
+    "ulasan": { "rating": 4.9, "jumlah_ulasan": 21, "rekomendasi": true }
+  },
+  {
+    "id": 19,
+    "nama_produk": "Argyle Knit Vest",
+    "kategori": "Atasan",
+    "merk": "Nostalgia",
+    "deskripsi": "Rompi rajut motif belah ketupat klasik, cocok dipadukan dengan kemeja putih.",
+    "gambar": "https://images.unsplash.com/photo-1614975058789-41316d0e2e9c?auto=format&fit=crop&w=500&q=60",
+    "detail_produk": { "bahan": "Acrylic Knit", "ukuran": ["S", "M", "L"], "warna": "Beige Blue" },
+    "harga_stok": { "harga": 165000, "stok": 28, "status": "Tersedia" },
+    "ulasan": { "rating": 4.6, "jumlah_ulasan": 88, "rekomendasi": true }
+  },
+  {
+    "id": 20,
+    "nama_produk": "Chunky Chain Necklace",
+    "kategori": "Aksesoris",
+    "merk": "Visionary",
+    "deskripsi": "Kalung rantai tebal berwarna perak metalik untuk mempertegas tampilan streetwear kamu.",
+    "gambar": "https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?auto=format&fit=crop&w=500&q=60",
+    "detail_produk": { "bahan": "Stainless Steel", "ukuran": ["45 cm"], "warna": "Chrome Silver" },
+    "harga_stok": { "harga": 110000, "stok": 15, "status": "Tersedia" },
+    "ulasan": { "rating": 4.4, "jumlah_ulasan": 62, "rekomendasi": true }
+  }
+]

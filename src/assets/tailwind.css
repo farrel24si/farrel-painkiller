@@ -1,0 +1,21 @@
+@import "tailwindcss";
+
+@theme {
+  /* Custom Fonts */
+  --font-poppins: "Poppins", ui-sans-serif, system-ui;
+  --font-barlow: "Barlow", ui-sans-serif, system-ui;
+
+  /* Custom Colors dari Figma */
+  --color-hijau: #00B074;
+  --color-hijau-muda: #D4F3E9;
+  --color-merah: #EF4444;
+  --color-biru: #2D9CDB;
+  --color-kuning: #FFB800;
+  --color-abu-teks: #464255;
+  --color-abu-muda: #A3A3A3;
+  --color-bg-utama: #F3F4F6;
+}
+
+body {
+  @apply font-barlow bg-bg-utama text-abu-teks;
+}
