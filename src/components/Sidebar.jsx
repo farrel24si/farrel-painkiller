@@ -1,6 +1,6 @@
 import { NavLink } from "react-router-dom";
 import { MdSpaceDashboard } from "react-icons/md";
-import { FaBed, FaUsers, FaExclamationTriangle } from "react-icons/fa";
+import { FaBed, FaUsers, FaExclamationTriangle, FaBoxes } from "react-icons/fa"; // Tambahkan FaBoxes
 
 export default function Sidebar() {
   // Fungsi untuk class pembungkus menu (Button utama)
@@ -21,10 +21,10 @@ export default function Sidebar() {
   return (
     <div className="w-72 bg-[#F8F9FA] h-screen flex flex-col border-r border-gray-100 font-['Helvetica']">
       
-      {/* Brand Logo */}
+      {/* Brand Logo - Diperbarui menjadi Grand Rafif */}
       <div className="flex flex-col items-center justify-center py-10">
         <h1 className="text-3xl font-extrabold text-gray-800 tracking-tight">
-          Grand Farrel<span className="text-[#3BCBBE]">.</span>
+          Capella<span className="text-[#3BCBBE]">.</span>
         </h1>
         <p className="text-xs text-gray-400 mt-1 font-bold uppercase tracking-wider">
           Hotel Management
@@ -70,8 +70,23 @@ export default function Sidebar() {
           </NavLink>
         </li>
 
+        {/* Menu Inventory Baru */}
+        <li>
+          <NavLink to="/inventory" className={menuClass}>
+            {({ isActive }) => (
+              <>
+                <div className={iconBoxClass(isActive)}>
+                  <FaBoxes className="text-lg" />
+                </div>
+                Inventory
+              </>
+            )}
+          </NavLink>
+        </li>
+
+
         {/* Pemisah Menu Error */}
-        <div className="px-10 py-4 mt-4">
+        {/* <div className="px-10 py-4 mt-4">
           <p className="text-xs font-bold text-gray-400 uppercase tracking-wider">
             System Errors
           </p>
@@ -112,7 +127,7 @@ export default function Sidebar() {
               </>
             )}
           </NavLink>
-        </li>
+        </li> */}
       </ul>
     </div>
   );

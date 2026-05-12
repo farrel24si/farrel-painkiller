@@ -12,7 +12,11 @@ import NotFound from "./pages/NotFound";
 // React.lazy() membuat komponen di-download hanya saat dibutuhkan, bukan di awal
 const Dashboard = React.lazy(() => import("./pages/Dashboard"));
 const Bookings = React.lazy(() => import("./pages/Bookings")); 
-const Guests = React.lazy(() => import("./pages/Guests"));     
+const Guests = React.lazy(() => import("./pages/Guests")); 
+
+// Tambahan Lazy Loading untuk Inventory
+const Inventori = React.lazy(() => import("./pages/Inventori"));
+const InventoriDetail = React.lazy(() => import("./pages/InventoriDetail"));
 
 // Implementasi Lazy Loading untuk Pages Auth
 const Login = React.lazy(() => import("./pages/auth/Login"));
@@ -33,6 +37,10 @@ export default function App() {
           <Route path="/" element={<Dashboard />} />
           <Route path="/bookings" element={<Bookings />} />
           <Route path="/guests" element={<Guests />} />
+          
+          {/* Route Inventory Baru */}
+          <Route path="/inventory" element={<Inventori />} />
+          <Route path="/inventory/:id" element={<InventoriDetail />} />
         </Route>
 
         {/* === AUTH LAYOUT === */}

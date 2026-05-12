@@ -1,0 +1,80 @@
+[
+  {
+    "id": "INV-001",
+    "name": "Ergonomic Pillow",
+    "category": "Amenities",
+    "type": "Complimentary",
+    "targetGuest": "VIP",
+    "totalStock": 50,
+    "inUse": 12,
+    "available": 38,
+    "status": "In Stock",
+    "price": 0,
+    "imageUrl": "https://images.unsplash.com/photo-1584100936595-c0654b55a2e2?auto=format&fit=crop&w=300&q=80"
+  },
+  {
+    "id": "INV-002",
+    "name": "Welcome Fruit Basket",
+    "category": "Food & Beverage",
+    "type": "Complimentary",
+    "targetGuest": "VIP, Member",
+    "totalStock": 30,
+    "inUse": 8,
+    "available": 22,
+    "status": "In Stock",
+    "price": 0,
+    "imageUrl": "https://images.unsplash.com/photo-1610832958506-aa56368176cf?auto=format&fit=crop&w=300&q=80"
+  },
+  {
+    "id": "INV-003",
+    "name": "Folding Extra Bed",
+    "category": "Equipment",
+    "type": "Add-on",
+    "targetGuest": "All",
+    "totalStock": 20,
+    "inUse": 18,
+    "available": 2,
+    "status": "Low Stock",
+    "price": 35,
+    "imageUrl": "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=300&q=80"
+  },
+  {
+    "id": "INV-004",
+    "name": "Premium Minibar Snacks",
+    "category": "Minibar",
+    "type": "Add-on",
+    "targetGuest": "All",
+    "totalStock": 100,
+    "inUse": 45,
+    "available": 55,
+    "status": "In Stock",
+    "price": 15,
+    "imageUrl": "https://images.unsplash.com/photo-1599599810769-bcde5a160d32?auto=format&fit=crop&w=300&q=80"
+  },
+  {
+    "id": "INV-005",
+    "name": "Baby Cot (Crib)",
+    "category": "Equipment",
+    "type": "Complimentary",
+    "targetGuest": "Family",
+    "totalStock": 10,
+    "inUse": 10,
+    "available": 0,
+    "status": "Out of Stock",
+    "price": 0,
+    "imageUrl": "https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?auto=format&fit=crop&w=300&q=80"
+  },
+  {
+    "id": "INV-006",
+    "name": "Hair Dryer (Pro Series)",
+    "category": "Amenities",
+    "type": "Complimentary",
+    "targetGuest": "All",
+    "totalStock": 80,
+    "inUse": 75,
+    "available": 5,
+    "status": "Low Stock",
+    "price": 0,
+    "imageUrl": "https://images.unsplash.com/photo-1522337660859-02fbefca4702?auto=format&fit=crop&w=300&q=80"
+  }
+]

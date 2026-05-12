@@ -9,7 +9,7 @@ export default function Guests() {
     <div className="flex-1 overflow-y-auto bg-[#F8F9FA] font-['Helvetica'] min-h-screen">
       <div className="px-6 pt-4">
         {/* Breadcrumb disesuaikan mengikuti format Dashboard */}
-        <PageHeader title="Guest Registry" breadcrumb={["Grand Farrel", "Guests"]}>
+        <PageHeader title="Guest Registry" breadcrumb={["Capella", "Guests"]}>
           <button 
             onClick={() => setShowForm(!showForm)}
             className={`${

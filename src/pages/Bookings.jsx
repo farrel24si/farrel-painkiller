@@ -9,7 +9,7 @@ export default function Bookings() {
     <div className="flex-1 overflow-y-auto bg-[#F8F9FA] font-['Helvetica'] min-h-screen">
       <div className="px-6 pt-4">
         {/* Breadcrumb disesuaikan mengikuti format Dashboard */}
-        <PageHeader title="Room Bookings" breadcrumb={["Grand Farrel", "Bookings"]}>
+        <PageHeader title="Room Bookings" breadcrumb={["Capella", "Bookings"]}>
           <button 
             onClick={() => setShowForm(!showForm)}
             className={`${

@@ -103,7 +103,7 @@ export default function Dashboard() {
             <div className="flex flex-col justify-between items-start pr-4">
               <div>
                 <p className="text-sm font-bold text-gray-400 mb-1">Built for hotel management</p>
-                <h2 className="text-2xl font-bold text-gray-800 mb-2">Grand Farrel System</h2>
+                <h2 className="text-2xl font-bold text-gray-800 mb-2">Capella System</h2>
                 <p className="text-sm text-gray-500 max-w-sm">
                   From reservations, room services, to revenue tracking, seamlessly manage the ultimate hotel experience.
                 </p>
