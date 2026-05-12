@@ -1,6 +1,9 @@
 import { NavLink } from "react-router-dom";
 import { MdSpaceDashboard } from "react-icons/md";
-import { FaBed, FaUsers, FaExclamationTriangle, FaBoxes } from "react-icons/fa"; // Tambahkan FaBoxes
+import { FaBed, FaUsers, FaExclamationTriangle, FaBoxes } from "react-icons/fa";
+
+// Import file logo1.png dari folder assets
+import logo1 from "../assets/logo1.png";
 
 export default function Sidebar() {
   // Fungsi untuk class pembungkus menu (Button utama)
@@ -21,11 +24,15 @@ export default function Sidebar() {
   return (
     <div className="w-72 bg-[#F8F9FA] h-screen flex flex-col border-r border-gray-100 font-['Helvetica']">
       
-      {/* Brand Logo - Diperbarui menjadi Grand Rafif */}
-      <div className="flex flex-col items-center justify-center py-10">
-        <h1 className="text-3xl font-extrabold text-gray-800 tracking-tight">
-          Capella<span className="text-[#3BCBBE]">.</span>
-        </h1>
+      {/* Brand Logo Section */}
+      <div className="flex flex-col items-center justify-center py-10 px-6">
+        {/* Menampilkan logo1.png */}
+        <img 
+          src={logo1} 
+          alt="Hotel Logo" 
+          className="h-16 w-auto object-contain mb-2" // Bisa kamu ubah h-12 menjadi h-16 dsb untuk memperbesar logo
+        />
+        
         <p className="text-xs text-gray-400 mt-1 font-bold uppercase tracking-wider">
           Hotel Management
         </p>

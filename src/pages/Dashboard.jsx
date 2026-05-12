@@ -118,7 +118,7 @@ export default function Dashboard() {
               style={{ backgroundImage: 'linear-gradient(to right, #3BCBBE, #FFFFFF)' }}
             >
                <h1 className="text-gray-800 text-2xl font-bold flex items-center gap-2">
-                 <FaConciergeBell /> Farrel.
+                 <FaConciergeBell /> Capella.
                </h1>
             </div>
           </Card>

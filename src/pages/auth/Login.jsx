@@ -58,7 +58,7 @@ export default function Login() {
     return (
         <div className="min-h-screen w-full flex font-sans bg-white relative overflow-hidden">
             
-            {/* --- TOP NAVBAR --- */}
+            {/* --- TOP NAVBAR ---
             <nav className="absolute top-6 left-1/2 -translate-x-1/2 w-[calc(100%-2rem)] max-w-[1000px] z-50 flex justify-between items-center bg-white/80 backdrop-blur-md rounded-2xl md:rounded-full px-6 py-4 shadow-[0_7px_23px_rgba(0,0,0,0.05)] border border-white">
                 <div className="font-bold text-slate-800 flex items-center gap-2 text-xs md:text-sm tracking-wider uppercase">
                     <FaCube className="text-xl" />
@@ -73,7 +73,7 @@ export default function Login() {
                 <button className="hidden md:block bg-slate-800 hover:bg-slate-700 text-white px-6 py-2.5 rounded-full text-[10px] font-bold uppercase transition-all shadow-md">
                     Free Download
                 </button>
-            </nav>
+            </nav> */}
 
             {/* --- KIRI: BAGIAN FORMULIR --- */}
             <div className="w-full lg:w-1/2 flex flex-col justify-center items-center px-6 pt-32 pb-12 z-10 min-h-screen">
@@ -182,7 +182,7 @@ export default function Login() {
                         <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center text-[#4FD1C5] shadow-xl">
                             <FaBolt size={32} />
                         </div>
-                        Grand Farrel
+                        Capella
                     </div>
 
                 </div>
