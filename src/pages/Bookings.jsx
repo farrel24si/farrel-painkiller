@@ -1,135 +1,84 @@
 import { useState } from "react";
 import PageHeader from "../components/PageHeader";
+import Button from "../components/Button";
+import Table from "../components/Table";
+import InputField from "../components/InputField";
+import SelectField from "../components/SelectField";
+import Alert from "../components/Alert";
 import { bookingsData } from "../data/dummyData";
 
 export default function Bookings() {
   const [showForm, setShowForm] = useState(false);
+  const [alert, setAlert] = useState(null);
+  const [formData, setFormData] = useState({ guestName: "", roomType: "Standard Room", checkIn: "", status: "Confirmed" });
+
+  const roomOptions = [
+    { value: "Standard Room", label: "Standard Room" },
+    { value: "Deluxe Room", label: "Deluxe Room" },
+    { value: "Executive Suite", label: "Executive Suite" },
+  ];
+  const statusOptions = [
+    { value: "Confirmed", label: "Confirmed" },
+    { value: "Checked-In", label: "Checked-In" },
+  ];
+
+  const handleChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
+  const handleSave = () => {
+    setAlert({ type: "success", message: "Booking successfully added!" });
+    setTimeout(() => setAlert(null), 3000);
+    setShowForm(false);
+    setFormData({ guestName: "", roomType: "Standard Room", checkIn: "", status: "Confirmed" });
+  };
+
+  const tableHeaders = ["Booking ID", "Guest Name", "Room Type", "Check-in Date", "Status"];
 
   return (
     <div className="flex-1 overflow-y-auto bg-[#F8F9FA] font-['Helvetica'] min-h-screen">
       <div className="px-6 pt-4">
-        {/* Breadcrumb disesuaikan mengikuti format Dashboard */}
         <PageHeader title="Room Bookings" breadcrumb={["Capella", "Bookings"]}>
-          <button 
-            onClick={() => setShowForm(!showForm)}
-            className={`${
-              showForm ? "bg-[#E53E3E] hover:bg-red-600" : "bg-[#3BCBBE] hover:bg-[#34b5a9]"
-            } text-white px-6 py-2.5 rounded-[12px] text-sm font-bold shadow-sm hover:shadow-md transition-all`}
-          >
+          <Button type={showForm ? "danger" : "primary"} onClick={() => setShowForm(!showForm)}>
             {showForm ? "Cancel" : "+ New Booking"}
-          </button>
+          </Button>
         </PageHeader>
       </div>
-      
       <div className="p-6">
-        
-        {/* FORM CONTAINER */}
+        {alert && <Alert type={alert.type} message={alert.message} onClose={() => setAlert(null)} />}
         {showForm && (
-          <div className="mb-6 bg-[#FFFFFF] p-[24px] rounded-[15px] shadow-sm animate-in fade-in zoom-in duration-200">
-            <h2 className="text-lg font-bold text-gray-800 mb-6">Add New Booking</h2>
-            
-            <form className="grid grid-cols-1 md:grid-cols-2 gap-5">
-              <div className="flex flex-col gap-1.5">
-                <label className="text-[11px] font-bold text-gray-400 uppercase tracking-wide">Guest Name</label>
-                <input 
-                  type="text" 
-                  placeholder="e.g. John Doe" 
-                  className="border border-gray-200 p-3 rounded-[12px] outline-none focus:ring-2 focus:ring-[#3BCBBE] focus:border-transparent bg-white text-sm text-gray-800 transition-all" 
-                />
-              </div>
-              
-              <div className="flex flex-col gap-1.5">
-                <label className="text-[11px] font-bold text-gray-400 uppercase tracking-wide">Room Type</label>
-                <select className="border border-gray-200 p-3 rounded-[12px] outline-none focus:ring-2 focus:ring-[#3BCBBE] focus:border-transparent bg-white text-sm text-gray-800 transition-all">
-                  <option value="Standard Room">Standard Room</option>
-                  <option value="Deluxe Room">Deluxe Room</option>
-                  <option value="Executive Suite">Executive Suite</option>
-                </select>
-              </div>
-              
-              <div className="flex flex-col gap-1.5">
-                <label className="text-[11px] font-bold text-gray-400 uppercase tracking-wide">Check-in Date</label>
-                <input 
-                  type="date" 
-                  className="border border-gray-200 p-3 rounded-[12px] outline-none focus:ring-2 focus:ring-[#3BCBBE] focus:border-transparent bg-white text-sm text-gray-800 transition-all" 
-                />
-              </div>
-              
-              <div className="flex flex-col gap-1.5">
-                <label className="text-[11px] font-bold text-gray-400 uppercase tracking-wide">Status</label>
-                <select className="border border-gray-200 p-3 rounded-[12px] outline-none focus:ring-2 focus:ring-[#3BCBBE] focus:border-transparent bg-white text-sm text-gray-800 transition-all">
-                  <option value="Confirmed">Confirmed</option>
-                  <option value="Checked-In">Checked-In</option>
-                </select>
-              </div>
-              
+          <div className="mb-6 bg-white p-6 rounded-[15px] shadow-sm">
+            <h2 className="text-lg font-bold mb-6">Add New Booking</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+              <InputField label="Guest Name" name="guestName" value={formData.guestName} onChange={handleChange} placeholder="e.g. John Doe" required />
+              <SelectField label="Room Type" options={roomOptions} name="roomType" value={formData.roomType} onChange={handleChange} />
+              <InputField label="Check-in Date" type="date" name="checkIn" value={formData.checkIn} onChange={handleChange} required />
+              <SelectField label="Status" options={statusOptions} name="status" value={formData.status} onChange={handleChange} />
               <div className="md:col-span-2 mt-2">
-                <button 
-                  type="button" 
-                  className="bg-gradient-to-br from-[#313860] to-[#151928] text-white px-8 py-3 rounded-[12px] font-bold text-sm shadow-md hover:shadow-lg transition-all"
-                >
-                  Save Booking
-                </button>
+                <Button type="dark" onClick={handleSave}>Save Booking</Button>
               </div>
-            </form>
+            </div>
           </div>
         )}
-
-        {/* TABLE CONTAINER */}
-        <div className="bg-[#FFFFFF] p-[24px] rounded-[15px] shadow-sm overflow-hidden">
-          
+        <div className="bg-white p-6 rounded-[15px] shadow-sm">
           <div className="mb-6">
-            <h3 className="text-lg font-bold text-gray-800">All Bookings</h3>
-            <p className="text-sm text-gray-400 font-bold flex items-center gap-1">
-              <span className="text-[#48BB78]">+15%</span> new bookings this week
-            </p>
+            <h3 className="text-lg font-bold">All Bookings</h3>
+            <p className="text-sm text-gray-400"><span className="text-[#48BB78]">+15%</span> new bookings this week</p>
           </div>
-
-          <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse">
-              <thead>
-                <tr className="border-b border-gray-100">
-                  <th className="pb-3 text-xs font-bold text-gray-400 uppercase">Booking ID</th>
-                  <th className="pb-3 text-xs font-bold text-gray-400 uppercase">Guest Name</th>
-                  <th className="pb-3 text-xs font-bold text-gray-400 uppercase">Room Type</th>
-                  <th className="pb-3 text-xs font-bold text-gray-400 uppercase">Check-in Date</th>
-                  <th className="pb-3 text-xs font-bold text-gray-400 uppercase">Status</th>
-                </tr>
-              </thead>
-              <tbody className="text-sm font-bold text-gray-800">
-                {bookingsData.map((booking, idx) => {
-                  
-                  // Pewarnaan Status disesuaikan dengan palet Purity UI
-                  let statusClasses = "";
-                  if (booking.status === 'Checked-In') {
-                    statusClasses = "bg-[#48BB78]/10 text-[#48BB78]";
-                  } else if (booking.status === 'Confirmed') {
-                    statusClasses = "bg-[#3BCBBE]/10 text-[#3BCBBE]";
-                  } else if (booking.status === 'Checked-Out') {
-                    statusClasses = "bg-gray-100 text-gray-500";
-                  } else {
-                    statusClasses = "bg-[#E53E3E]/10 text-[#E53E3E]"; // Cancelled/Pending
-                  }
-
-                  return (
-                    <tr key={idx} className="border-b border-gray-50 hover:bg-gray-50/50 transition-colors">
-                      <td className="py-4 text-[#3BCBBE]">{booking.id}</td>
-                      <td className="py-4">{booking.guestName}</td>
-                      <td className="py-4">{booking.roomType}</td>
-                      <td className="py-4 text-gray-500 font-normal">{booking.checkIn}</td>
-                      <td className="py-4">
-                        <span className={`px-3 py-1.5 rounded-[8px] text-[11px] uppercase tracking-wider font-bold ${statusClasses}`}>
-                          {booking.status}
-                        </span>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
+          <Table headers={tableHeaders}>
+            {bookingsData.map((booking, idx) => (
+              <tr key={idx} className="border-b border-gray-50 hover:bg-gray-50/50">
+                <td className="py-4 text-[#3BCBBE]">{booking.id}</td>
+                <td className="py-4">{booking.guestName}</td>
+                <td className="py-4">{booking.roomType}</td>
+                <td className="py-4 text-gray-500">{booking.checkIn}</td>
+                <td className="py-4">
+                  <span className={`px-3 py-1.5 rounded-[8px] text-[11px] uppercase font-bold ${
+                    booking.status === "Checked-In" ? "text-[#48BB78] bg-[#48BB78]/10" :
+                    booking.status === "Confirmed" ? "text-[#3BCBBE] bg-[#3BCBBE]/10" : "text-gray-500 bg-gray-100"
+                  }`}>{booking.status}</span>
+                </td>
+              </tr>
+            ))}
+          </Table>
         </div>
-
       </div>
     </div>
   );

@@ -21,10 +21,11 @@ import {
   ResponsiveContainer,
 } from "recharts";
 
-// 1. UBAH BAGIAN INI: Sesuaikan path letak file Header.jsx Anda
 import Header from "../components/Header"; 
+import Card from "../components/Card";
 
 export default function Dashboard() {
+  
   // Data Metrik Atas
   const metrics = [
     { title: "Total Bookings", value: "142", pct: "+12%", isPositive: true, icon: <FaBed /> },
