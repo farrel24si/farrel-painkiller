@@ -1,13 +1,12 @@
 import { NavLink } from "react-router-dom";
 import { MdSpaceDashboard } from "react-icons/md";
-import { FaBed, FaUsers, FaExclamationTriangle, FaBoxes } from "react-icons/fa";
+import { FaBed, FaUsers, FaExclamationTriangle, FaBoxes, FaStar } from "react-icons/fa";
 
 // Import file logo1.png dari folder assets
 import logo1 from "../assets/logo1.png";
 
 export default function Sidebar() {
   // Fungsi untuk class pembungkus menu (Button utama)
-  // Mematuhi aturan: bg putih FFFFFF saat aktif/hover, padding 18px, shadow tipis, font Helvetica
   const menuClass = ({ isActive }) =>
     `flex items-center px-[18px] py-[12px] mx-4 my-2 rounded-[15px] transition-all font-bold text-sm cursor-pointer ${
       isActive
@@ -30,7 +29,7 @@ export default function Sidebar() {
         <img 
           src={logo1} 
           alt="Hotel Logo" 
-          className="h-16 w-auto object-contain mb-2" // Bisa kamu ubah h-12 menjadi h-16 dsb untuk memperbesar logo
+          className="h-16 w-auto object-contain mb-2" 
         />
         
         <p className="text-xs text-gray-400 mt-1 font-bold uppercase tracking-wider">
@@ -38,8 +37,8 @@ export default function Sidebar() {
         </p>
       </div>
 
-      {/* Navigation - Menggunakan render props NavLink agar ikon bisa ikut bereaksi saat aktif */}
-      <ul className="flex-1 overflow-y-auto">
+      {/* Navigation */}
+      <ul className="flex-1 overflow-y-auto pb-6">
         <li>
           <NavLink to="/" className={menuClass}>
             {({ isActive }) => (
@@ -77,7 +76,6 @@ export default function Sidebar() {
           </NavLink>
         </li>
 
-        {/* Menu Inventory Baru */}
         <li>
           <NavLink to="/inventory" className={menuClass}>
             {({ isActive }) => (
@@ -86,6 +84,20 @@ export default function Sidebar() {
                   <FaBoxes className="text-lg" />
                 </div>
                 Inventory
+              </>
+            )}
+          </NavLink>
+        </li>
+
+        {/* === MENU BARU: REVIEWS === */}
+        <li>
+          <NavLink to="/reviews" className={menuClass}>
+            {({ isActive }) => (
+              <>
+                <div className={iconBoxClass(isActive)}>
+                  <FaStar className="text-lg" />
+                </div>
+                Reviews & Feedback
               </>
             )}
           </NavLink>

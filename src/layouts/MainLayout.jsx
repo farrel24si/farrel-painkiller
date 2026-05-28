@@ -1,31 +1,34 @@
-import { Outlet } from "react-router-dom";
+import { Outlet, useLocation } from "react-router-dom";
 import Sidebar from "../components/Sidebar";
 import Header from "../components/Header";
 
+const routeMeta = {
+  "/":          { title: "Dashboard",            breadcrumb: ["Capella", "Dashboard"] },
+  "/bookings":  { title: "Room Bookings",        breadcrumb: ["Capella", "Bookings"] },
+  "/guests":    { title: "Guest Registry",       breadcrumb: ["Capella", "Guests"] },
+  "/inventory": { title: "Inventory Management", breadcrumb: ["Capella", "Inventory"] },
+  "/reviews":   { title: "Reviews & Feedback",   breadcrumb: ["Grand Farrel", "Reviews & Feedback"] },
+};
+
 export default function MainLayout() {
-    return (
-        // flex = mengaktifkan flexbox, h-screen = tinggi penuh layar
-        <div className="flex h-screen bg-slate-50">
-            <Sidebar />  {/* Sidebar tetap di kiri */}
-            
-            {/*
-                flex-1 = ambil sisa lebar setelah sidebar
-                flex flex-col = susun header dan konten secara vertikal
-                overflow-hidden = potong kelebihan konten (agar scroll hanya di area tertentu)
-            */}
-            <div className="flex-1 flex flex-col overflow-hidden">
-                <Header />  {/* Header tetap di atas */}
-                
-                {/*
-                    flex-1 = ambil sisa tinggi setelah header
-                    overflow-y-auto = jika konten di dalam Outlet melebihi tinggi,
-                                    akan muncul scrollbar VERTIKAL di sini
-                                    Header dan Sidebar tetap diam.
-                */}
-                <div className="flex-1 overflow-y-auto bg-slate-50">
-                    <Outlet />  {/* Tempat halaman Dashboard, Bookings, Guests dirender */}
-                </div>
-            </div>
-        </div>
-    );
+  const { pathname } = useLocation();
+
+  // Handle dynamic route /inventory/:id
+  const isInventoryDetail = pathname.startsWith("/inventory/") && pathname !== "/inventory";
+
+  const meta = isInventoryDetail
+    ? { title: "Inventory Detail", breadcrumb: ["Capella", "Inventory", "Detail"] }
+    : routeMeta[pathname] ?? { title: "Page", breadcrumb: ["Capella", "Page"] };
+
+  return (
+    <div className="flex min-h-screen bg-gray-50">
+      <Sidebar />
+      <div className="flex-1 flex flex-col">
+        <Header title={meta.title} breadcrumb={meta.breadcrumb} />
+        <main className="p-6">
+          <Outlet />
+        </main>
+      </div>
+    </div>
+  );
 }
