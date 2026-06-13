@@ -1,11 +1,9 @@
 import React, { useState, useEffect, useRef } from "react";
-import PageHeader from "../components/PageHeader";
 import Card from "../components/Card";
 import Badge from "../components/Badge";
 import Avatar from "../components/Avatar";
 import { FaStar, FaSearch, FaFilter, FaCheck } from "react-icons/fa";
 
-// === IMPORT KOMPONEN SHADCN UI ===
 import { Input } from "@/components/ui/input";
 import { Progress } from "@/components/ui/progress";
 import {
@@ -16,7 +14,6 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 export default function Reviews() {
-  // Data statis ulasan tamu hotel Capella
   const reviewsData = [
     { id: 1, name: "Budi Santoso", room: "Presidential Suite", rating: 5, text: "Pelayanan luar biasa! Kamar sangat bersih.", status: "Positive" },
     { id: 2, name: "Siti Aminah", room: "Deluxe Suite", rating: 3, text: "AC butuh waktu lama untuk dingin. Sarapan enak.", status: "Neutral" },
@@ -25,15 +22,12 @@ export default function Reviews() {
     { id: 5, name: "Nisa Sabyan", room: "Superior Room", rating: 4, text: "Nyaman dan tenang, cocok untuk istirahat.", status: "Positive" },
   ];
 
-  // 1. IMPLEMENTASI USESTATE
   const [searchTerm, setSearchTerm] = useState("");
   const [filterRating, setFilterRating] = useState("All"); 
   const [filteredReviews, setFilteredReviews] = useState(reviewsData);
 
-  // 2. IMPLEMENTASI USEREF
   const searchInputRef = useRef(null);
 
-  // 3. IMPLEMENTASI USEEFFECT (A) - Auto Focus
   useEffect(() => {
     setTimeout(() => {
       if (searchInputRef.current) {
@@ -42,7 +36,6 @@ export default function Reviews() {
     }, 100);
   }, []);
 
-  // 4. IMPLEMENTASI USEEFFECT (B) - Filter Real-Time (Search + Dropdown)
   useEffect(() => {
     let results = reviewsData;
     if (searchTerm !== "") {
@@ -57,14 +50,11 @@ export default function Reviews() {
     } else if (filterRating === "1-3") {
       results = results.filter(review => review.rating >= 1 && review.rating <= 3);
     }
-    // Set hasil akhir ke state untuk dirender
     setFilteredReviews(results);
   }, [searchTerm, filterRating]);
 
   return (
     <div className="flex-1 overflow-y-auto bg-[#F8F9FA] font-['Helvetica'] min-h-screen">
-      <PageHeader title="Reviews & Feedback" breadcrumb={["Capella", "Reviews & Feedback"]} />
-      
       <div className="p-6">
         <div className="mb-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
           <div>
@@ -73,7 +63,6 @@ export default function Reviews() {
           </div>
           
           <div className="flex items-center gap-3 w-full md:w-auto">
-            {/* INPUT SHADCN (Terhubung dengan useState & useRef) */}
             <div className="relative w-full md:w-64">
               <FaSearch className="absolute left-3 top-3 text-gray-400" />
               <Input 
@@ -86,7 +75,6 @@ export default function Reviews() {
               />
             </div>
 
-            {/* DROPDOWN SHADCN (Terhubung dengan state filterRating) */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <div className={`flex items-center gap-2 border px-4 py-2 rounded-md cursor-pointer text-sm font-medium transition-colors ${
@@ -122,7 +110,6 @@ export default function Reviews() {
           <Progress value={85} className="h-2 bg-gray-100" />
         </Card>
 
-        {/* TAMPILAN DATA HASIL FILTER */}
         <div className="grid gap-4">
           {filteredReviews.length > 0 ? (
             filteredReviews.map((review) => (

@@ -3,11 +3,12 @@ import Sidebar from "../components/Sidebar";
 import Header from "../components/Header";
 
 const routeMeta = {
-  "/":          { title: "Dashboard",            breadcrumb: ["Capella", "Dashboard"] },
-  "/bookings":  { title: "Room Bookings",        breadcrumb: ["Capella", "Bookings"] },
-  "/guests":    { title: "Guest Registry",       breadcrumb: ["Capella", "Guests"] },
-  "/inventory": { title: "Inventory Management", breadcrumb: ["Capella", "Inventory"] },
-  "/reviews":   { title: "Reviews & Feedback",   breadcrumb: ["Grand Farrel", "Reviews & Feedback"] },
+  "/dashboard": { title: "Dashboard",        breadcrumb: ["Capella", "Dashboard"] },
+  "/bookings":  { title: "Room Bookings",    breadcrumb: ["Capella", "Bookings"] },
+  "/guests":    { title: "Guest Registry",   breadcrumb: ["Capella", "Guests"] },
+  "/users":     { title: "User Management",  breadcrumb: ["Capella", "Users"] },
+  "/inventory": { title: "Inventory",        breadcrumb: ["Capella", "Inventory"] },
+  "/reviews":   { title: "Reviews",          breadcrumb: ["Capella", "Reviews"] },
 };
 
 export default function MainLayout() {

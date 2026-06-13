@@ -1,6 +1,14 @@
 import { NavLink } from "react-router-dom";
 import { MdSpaceDashboard } from "react-icons/md";
-import { FaBed, FaUsers, FaExclamationTriangle, FaBoxes, FaStar } from "react-icons/fa";
+import { 
+  FaBed, 
+  FaUsers, 
+  FaExclamationTriangle, 
+  FaBoxes, 
+  FaStar, 
+  FaUserShield, 
+  FaStickyNote 
+} from "react-icons/fa";
 
 // Import file logo1.png dari folder assets
 import logo1 from "../assets/logo1.png";
@@ -21,7 +29,8 @@ export default function Sidebar() {
     }`;
 
   return (
-    <div className="w-72 bg-[#F8F9FA] h-screen flex flex-col border-r border-gray-100 font-['Helvetica']">
+    // DI SINI PERBAIKANNYA: Menambahkan sticky top-0 left-0 z-50
+    <div className="w-72 bg-[#F8F9FA] h-screen sticky top-0 left-0 z-50 flex flex-col border-r border-gray-100 font-['Helvetica']">
       
       {/* Brand Logo Section */}
       <div className="flex flex-col items-center justify-center py-10 px-6">
@@ -40,7 +49,8 @@ export default function Sidebar() {
       {/* Navigation */}
       <ul className="flex-1 overflow-y-auto pb-6">
         <li>
-          <NavLink to="/" className={menuClass}>
+          {/* UBAH DARI "/" MENJADI "/dashboard" */}
+          <NavLink to="/dashboard" className={menuClass}>
             {({ isActive }) => (
               <>
                 <div className={iconBoxClass(isActive)}>
@@ -89,7 +99,6 @@ export default function Sidebar() {
           </NavLink>
         </li>
 
-        {/* === MENU BARU: REVIEWS === */}
         <li>
           <NavLink to="/reviews" className={menuClass}>
             {({ isActive }) => (
@@ -103,50 +112,34 @@ export default function Sidebar() {
           </NavLink>
         </li>
 
+        {/* === MENU BARU: ACCOUNT USERS (Supabase CRUD) === */}
+        <li>
+          <NavLink to="/users" className={menuClass}>
+            {({ isActive }) => (
+              <>
+                <div className={iconBoxClass(isActive)}>
+                  <FaUserShield className="text-lg" />
+                </div>
+                Account Users
+              </>
+            )}
+          </NavLink>
+        </li>
 
-        {/* Pemisah Menu Error */}
-        {/* <div className="px-10 py-4 mt-4">
-          <p className="text-xs font-bold text-gray-400 uppercase tracking-wider">
-            System Errors
-          </p>
-        </div>
-        
+        {/* === MENU BARU: INTERNAL NOTES (Modul 13) === */}
         <li>
-          <NavLink to="/error-400" className={menuClass}>
+          <NavLink to="/notes" className={menuClass}>
             {({ isActive }) => (
               <>
                 <div className={iconBoxClass(isActive)}>
-                  <FaExclamationTriangle className="text-lg text-[#E53E3E]" />
+                  <FaStickyNote className="text-lg" />
                 </div>
-                Error 400
+                Internal Notes
               </>
             )}
           </NavLink>
         </li>
-        <li>
-          <NavLink to="/error-401" className={menuClass}>
-            {({ isActive }) => (
-              <>
-                <div className={iconBoxClass(isActive)}>
-                  <FaExclamationTriangle className="text-lg text-[#E53E3E]" />
-                </div>
-                Error 401
-              </>
-            )}
-          </NavLink>
-        </li>
-        <li>
-          <NavLink to="/error-403" className={menuClass}>
-            {({ isActive }) => (
-              <>
-                <div className={iconBoxClass(isActive)}>
-                  <FaExclamationTriangle className="text-lg text-[#E53E3E]" />
-                </div>
-                Error 403
-              </>
-            )}
-          </NavLink>
-        </li> */}
+
       </ul>
     </div>
   );

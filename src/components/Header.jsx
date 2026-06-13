@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { FaSearch, FaUser, FaCog, FaBell, FaHistory } from "react-icons/fa";
 
 // === IMPORT 3 KOMPONEN SHADCN UI ===
@@ -28,6 +29,22 @@ const COLORS = {
 
 export default function Header({ title = "Dashboard", breadcrumb = ["Pages", "Dashboard"] }) {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [user, setUser] = useState(null); // State untuk menyimpan data user
+  const navigate = useNavigate();
+
+  // Membaca data user dari localStorage saat Header dimuat
+  useEffect(() => {
+    const loggedInUser = localStorage.getItem("userSession");
+    if (loggedInUser) {
+      setUser(JSON.parse(loggedInUser));
+    }
+  }, []);
+
+  // Fungsi untuk Log Out
+  const handleLogout = () => {
+    localStorage.removeItem("userSession"); // Hapus sesi
+    navigate("/login"); // Arahkan kembali ke halaman login
+  };
 
   return (
     <header className="flex flex-col md:flex-row justify-between items-start md:items-center w-full px-6 pt-6 pb-2 sticky top-0 z-40 bg-[#F8F9FA] font-['Helvetica']">
@@ -77,22 +94,46 @@ export default function Header({ title = "Dashboard", breadcrumb = ["Pages", "Da
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <button className="flex items-center gap-2 font-bold text-sm transition-colors ml-2 hover:text-[#3BCBBE] outline-none" style={{ color: COLORS.textGray }}>
-              <FaUser className="text-sm" />
-              <span>Sign In</span>
+              {/* Jika user sudah login, tampilkan ikon dan inisial/nama. Jika belum, tampilkan Sign In */}
+              {user ? (
+                <div className="flex items-center gap-2 bg-white px-3 py-1.5 rounded-full border border-gray-200 shadow-sm">
+                  <div className="w-6 h-6 rounded-full bg-[#3BCBBE] text-white flex items-center justify-center text-xs">
+                    {user.name.charAt(0).toUpperCase()}
+                  </div>
+                  <span className="text-gray-700">{user.name.split(" ")[0]}</span>
+                </div>
+              ) : (
+                <>
+                  <FaUser className="text-sm" />
+                  <span>Sign In</span>
+                </>
+              )}
             </button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-48 font-['Helvetica'] rounded-xl">
-            <DropdownMenuLabel>My Account</DropdownMenuLabel>
-            <DropdownMenuSeparator />
+            {/* Tampilkan Nama Lengkap & Email di Dropdown */}
+            {user ? (
+              <>
+                <DropdownMenuLabel className="flex flex-col">
+                  <span>{user.name}</span>
+                  <span className="text-xs text-gray-400 font-normal">{user.email}</span>
+                </DropdownMenuLabel>
+                <DropdownMenuSeparator />
+              </>
+            ) : (
+              <DropdownMenuLabel>My Account</DropdownMenuLabel>
+            )}
             <DropdownMenuItem className="cursor-pointer hover:text-[#3BCBBE] focus:text-[#3BCBBE]">Profile</DropdownMenuItem>
             <DropdownMenuItem className="cursor-pointer hover:text-[#3BCBBE] focus:text-[#3BCBBE]">Billing</DropdownMenuItem>
-            <DropdownMenuItem className="cursor-pointer hover:text-[#3BCBBE] focus:text-[#3BCBBE]">Team</DropdownMenuItem>
+            <DropdownMenuItem className="cursor-pointer hover:text-[#3BCBBE] focus:text-[#3BCBBE]">Settings</DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem className="cursor-pointer text-red-500 focus:text-red-500">Log out</DropdownMenuItem>
+            {/* Fungsi Logout dipanggil di sini */}
+            <DropdownMenuItem onClick={handleLogout} className="cursor-pointer text-red-500 focus:text-red-500">
+              Log out
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
 
-        {/* Ikon Settings (Biasa) */}
         <button className="transition-colors hover:text-[#3BCBBE]" style={{ color: COLORS.textGray }}>
           <FaCog className="text-lg" />
         </button>
@@ -103,7 +144,6 @@ export default function Header({ title = "Dashboard", breadcrumb = ["Pages", "Da
             <TooltipTrigger asChild>
               <button className="transition-colors hover:text-[#3BCBBE] relative" style={{ color: COLORS.textGray }}>
                 <FaBell className="text-lg" />
-                {/* Red dot notifikasi */}
                 <span className="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full border border-white"></span>
               </button>
             </TooltipTrigger>

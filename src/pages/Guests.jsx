@@ -1,5 +1,4 @@
 import { useState } from "react";
-import PageHeader from "../components/PageHeader";
 import Button from "../components/Button";
 import Table from "../components/Table";
 import InputField from "../components/InputField";
@@ -30,15 +29,9 @@ export default function Guests() {
 
   return (
     <div className="flex-1 overflow-y-auto bg-[#F8F9FA] font-['Helvetica'] min-h-screen">
-      <div className="px-6 pt-4">
-        <PageHeader title="Guest Registry" breadcrumb={["Capella", "Guests"]}>
-          <Button type={showForm ? "danger" : "primary"} onClick={() => setShowForm(!showForm)}>
-            {showForm ? "Cancel" : "+ Add Guest"}
-          </Button>
-        </PageHeader>
-      </div>
       <div className="p-6">
         {alert && <Alert type={alert.type} message={alert.message} onClose={() => setAlert(null)} />}
+        
         {showForm && (
           <div className="mb-6 bg-white p-6 rounded-[15px] shadow-sm">
             <h2 className="text-lg font-bold mb-6">Register New Guest</h2>
@@ -53,11 +46,19 @@ export default function Guests() {
             </div>
           </div>
         )}
+        
         <div className="bg-white p-6 rounded-[15px] shadow-sm">
-          <div className="mb-6">
-            <h3 className="text-lg font-bold">All Guests</h3>
-            <p className="text-sm text-gray-400"><span className="text-[#48BB78]">+8</span> new guests this month</p>
+          <div className="mb-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+            <div>
+              <h3 className="text-lg font-bold">All Guests</h3>
+              <p className="text-sm text-gray-400"><span className="text-[#48BB78]">+8</span> new guests this month</p>
+            </div>
+            {/* Tombol dipindah ke sini */}
+            <Button type={showForm ? "danger" : "primary"} onClick={() => setShowForm(!showForm)}>
+              {showForm ? "Cancel" : "+ Add Guest"}
+            </Button>
           </div>
+          
           <Table headers={tableHeaders}>
             {guestsData.map((guest, idx) => (
               <tr key={idx} className="border-b border-gray-50 hover:bg-gray-50/50">

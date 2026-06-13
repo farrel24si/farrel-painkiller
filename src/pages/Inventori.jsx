@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import PageHeader from "../components/PageHeader";
 import Button from "../components/Button";
 import Table from "../components/Table";
 import InputField from "../components/InputField";
@@ -40,13 +39,6 @@ export default function Inventori() {
 
   return (
     <div className="flex-1 overflow-y-auto bg-[#F8F9FA] font-['Helvetica'] min-h-screen">
-      <div className="px-6 pt-4">
-        <PageHeader title="Inventory Management" breadcrumb={["Capella", "Inventory"]}>
-          <Button type={showForm ? "danger" : "primary"} onClick={() => setShowForm(!showForm)}>
-            {showForm ? "Cancel" : "+ Add Item"}
-          </Button>
-        </PageHeader>
-      </div>
       <div className="p-6">
         {/* Metrics Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
@@ -73,13 +65,20 @@ export default function Inventori() {
         )}
 
         <div className="bg-white p-6 rounded-[15px] shadow-sm">
-          <div className="mb-6 flex flex-col md:flex-row justify-between items-center gap-4">
-            <div><h3 className="text-lg font-bold">Inventory List</h3><p className="text-sm text-gray-400">Manage your CRM-linked items</p></div>
-            <div className="flex gap-3">
-              <input type="text" placeholder="Search items..." className="border p-2 rounded-[12px] text-sm" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
-              <select className="border p-2 rounded-[12px] text-sm" value={selectedCategory} onChange={(e) => setSelectedCategory(e.target.value)}>
+          <div className="mb-6 flex flex-col xl:flex-row justify-between items-start xl:items-center gap-4">
+            <div>
+              <h3 className="text-lg font-bold">Inventory List</h3>
+              <p className="text-sm text-gray-400">Manage your CRM-linked items</p>
+            </div>
+            <div className="flex flex-col md:flex-row gap-3 w-full xl:w-auto">
+              <input type="text" placeholder="Search items..." className="border p-2 rounded-[12px] text-sm w-full md:w-auto" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
+              <select className="border p-2 rounded-[12px] text-sm w-full md:w-auto" value={selectedCategory} onChange={(e) => setSelectedCategory(e.target.value)}>
                 {categories.map(cat => <option key={cat} value={cat}>{cat}</option>)}
               </select>
+              {/* Tombol dipindah ke sini */}
+              <Button type={showForm ? "danger" : "primary"} onClick={() => setShowForm(!showForm)}>
+                {showForm ? "Cancel" : "+ Add Item"}
+              </Button>
             </div>
           </div>
           <Table headers={tableHeaders}>

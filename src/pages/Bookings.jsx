@@ -1,5 +1,4 @@
 import { useState } from "react";
-import PageHeader from "../components/PageHeader";
 import Button from "../components/Button";
 import Table from "../components/Table";
 import InputField from "../components/InputField";
@@ -34,15 +33,9 @@ export default function Bookings() {
 
   return (
     <div className="flex-1 overflow-y-auto bg-[#F8F9FA] font-['Helvetica'] min-h-screen">
-      <div className="px-6 pt-4">
-        <PageHeader title="Room Bookings" breadcrumb={["Capella", "Bookings"]}>
-          <Button type={showForm ? "danger" : "primary"} onClick={() => setShowForm(!showForm)}>
-            {showForm ? "Cancel" : "+ New Booking"}
-          </Button>
-        </PageHeader>
-      </div>
       <div className="p-6">
         {alert && <Alert type={alert.type} message={alert.message} onClose={() => setAlert(null)} />}
+        
         {showForm && (
           <div className="mb-6 bg-white p-6 rounded-[15px] shadow-sm">
             <h2 className="text-lg font-bold mb-6">Add New Booking</h2>
@@ -57,11 +50,19 @@ export default function Bookings() {
             </div>
           </div>
         )}
+        
         <div className="bg-white p-6 rounded-[15px] shadow-sm">
-          <div className="mb-6">
-            <h3 className="text-lg font-bold">All Bookings</h3>
-            <p className="text-sm text-gray-400"><span className="text-[#48BB78]">+15%</span> new bookings this week</p>
+          <div className="mb-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+            <div>
+              <h3 className="text-lg font-bold">All Bookings</h3>
+              <p className="text-sm text-gray-400"><span className="text-[#48BB78]">+15%</span> new bookings this week</p>
+            </div>
+            {/* Tombol dipindah ke sini */}
+            <Button type={showForm ? "danger" : "primary"} onClick={() => setShowForm(!showForm)}>
+              {showForm ? "Cancel" : "+ New Booking"}
+            </Button>
           </div>
+          
           <Table headers={tableHeaders}>
             {bookingsData.map((booking, idx) => (
               <tr key={idx} className="border-b border-gray-50 hover:bg-gray-50/50">
