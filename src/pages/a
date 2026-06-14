@@ -1,0 +1,846 @@
+import { useState, useEffect, useRef, useCallback } from "react";
+import { Link } from "react-router-dom";
+import { ShoppingCart, Menu, X, ArrowUp, ChevronDown, Heart, Star } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+
+/* =====================
+   DATA DUMMY PRODUK
+   ===================== */
+const allProducts = [
+  {
+    id: 1,
+    nama: "Sofa Kayu Jati Lentur",
+    material: "Kayu Jati & Linen Premium",
+    harga: "Rp 12.500.000",
+    kategori: "Ruang Tamu",
+    gambar: "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+  },
+  {
+    id: 2,
+    nama: "Kursi Santai Rotan Alami",
+    material: "Rotan Sintetis & Kayu Mahoni",
+    harga: "Rp 4.200.000",
+    kategori: "Ruang Tamu",
+    gambar: "https://images.unsplash.com/photo-1598300042247-d088f8ab3a91?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+  },
+  {
+    id: 3,
+    nama: "Ranjang Minimalis Kayu Mangga",
+    material: "Kayu Mangga Solid",
+    harga: "Rp 9.800.000",
+    kategori: "Kamar Tidur",
+    gambar: "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+  },
+  {
+    id: 4,
+    nama: "Meja Rias Cermin Bundar",
+    material: "Kayu Pinus & Cermin",
+    harga: "Rp 5.600.000",
+    kategori: "Kamar Tidur",
+    gambar: "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+  },
+  {
+    id: 5,
+    nama: "Meja Makan Set 6 Kursi",
+    material: "Kayu Jati Belanda",
+    harga: "Rp 18.900.000",
+    kategori: "Ruang Makan",
+    gambar: "https://images.unsplash.com/photo-1617098900591-3f90928e8c54?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+  },
+  {
+    id: 6,
+    nama: "Bufet Penyimpanan Kayu Ukir",
+    material: "Kayu Suar dengan Ukiran Tangan",
+    harga: "Rp 14.200.000",
+    kategori: "Ruang Makan",
+    gambar: "https://images.unsplash.com/photo-1594026112284-02bb6f3352fe?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+  },
+  {
+    id: 7,
+    nama: "Kursi Gantung Teras",
+    material: "Rotan Alami & Baja Tahan Karat",
+    harga: "Rp 3.800.000",
+    kategori: "Outdoor",
+    gambar: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+  },
+  {
+    id: 8,
+    nama: "Set Meja Teras Minimalis",
+    material: "Kayu Merbau & Kaca Tempered",
+    harga: "Rp 7.900.000",
+    kategori: "Outdoor",
+    gambar: "https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+  },
+];
+
+/* =====================
+   SCROLL REVEAL HOOK
+   ===================== */
+const useScrollReveal = () => {
+  const ref = useRef(null);
+  const [isVisible, setIsVisible] = useState(false);
+
+  useEffect(() => {
+    const node = ref.current;
+    if (!node) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsVisible(true);
+          observer.unobserve(node);
+        }
+      },
+      { threshold: 0.15 }
+    );
+
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, []);
+
+  return [ref, isVisible];
+};
+
+const ScrollReveal = ({ children, className = "", delay = 0 }) => {
+  const [ref, isVisible] = useScrollReveal();
+  return (
+    <div
+      ref={ref}
+      className={`transition-all duration-700 ease-out ${
+        isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+      } ${className}`}
+      style={{ transitionDelay: `${delay}ms` }}
+    >
+      {children}
+    </div>
+  );
+};
+
+/* =====================
+   PARALLAX HELPER
+   ===================== */
+const useParallax = (speed = 0.4) => {
+  const ref = useRef(null);
+  const offsetRef = useRef(0);
+
+  const handleScroll = useCallback(() => {
+    if (!ref.current) return;
+    const scrollY = window.scrollY;
+    offsetRef.current = scrollY * speed;
+    ref.current.style.backgroundPositionY = `calc(50% + ${offsetRef.current}px)`;
+  }, [speed]);
+
+  useEffect(() => {
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [handleScroll]);
+
+  return ref;
+};
+
+/* =====================
+   MAIN LANDING PAGE
+   ===================== */
+export default function LandingPage() {
+  const [scrolled, setScrolled] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [activeFilter, setActiveFilter] = useState("Semua");
+  const [showBackToTop, setShowBackToTop] = useState(false);
+
+  // Header scroll effect
+  useEffect(() => {
+    const onScroll = () => {
+      setScrolled(window.scrollY > 40);
+      setShowBackToTop(window.scrollY > 600);
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  const heroRef = useParallax(0.4);
+  const atmosRef = useParallax(0.3);
+
+  const filteredProducts =
+    activeFilter === "Semua"
+      ? allProducts
+      : allProducts.filter((p) => p.kategori === activeFilter);
+
+  const filters = ["Semua", "Ruang Tamu", "Kamar Tidur", "Ruang Makan", "Outdoor"];
+
+  const scrollToCatalog = () => {
+    document.getElementById("katalog")?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  return (
+    <>
+      <style>{`
+        @keyframes fadeInUp {
+          from { opacity: 0; transform: translateY(20px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes bounce-slow {
+          0%, 100% { transform: translateY(0); }
+          50% { transform: translateY(8px); }
+        }
+        .masonry-grid {
+          column-count: 3;
+          column-gap: 1.5rem;
+        }
+        @media (max-width: 768px) {
+          .masonry-grid { column-count: 2; }
+        }
+        @media (max-width: 480px) {
+          .masonry-grid { column-count: 1; }
+        }
+        .masonry-item {
+          break-inside: avoid;
+          margin-bottom: 1.5rem;
+        }
+      `}</style>
+
+      <div className="font-['DM_Sans'] text-[#1C1C1A] bg-[#F5F0E8] selection:bg-[#C4A882] selection:text-white">
+        {/* ===== HEADER ===== */}
+        <header
+          className={`fixed top-0 left-0 w-full z-50 transition-all duration-500 ${
+            scrolled
+              ? "bg-[#F5F0E8]/90 backdrop-blur-md shadow-sm"
+              : "bg-transparent"
+          }`}
+        >
+          <div className="max-w-7xl mx-auto flex items-center justify-between px-6 py-4">
+            {/* Logo */}
+            <Link
+              to="/"
+              className="font-['Playfair_Display'] italic text-2xl md:text-3xl tracking-wide text-[#6B4226]"
+            >
+              Kayu &amp; Rasa
+            </Link>
+
+            {/* Desktop Nav */}
+            <nav className="hidden md:flex items-center space-x-8 text-sm font-medium">
+              <a href="#koleksi" className="hover:text-[#6B4226] transition">
+                Koleksi
+              </a>
+              <a href="#tentang" className="hover:text-[#6B4226] transition">
+                Tentang Kami
+              </a>
+              <a href="#inspirasi" className="hover:text-[#6B4226] transition">
+                Inspirasi
+              </a>
+              <a href="#kontak" className="hover:text-[#6B4226] transition">
+                Kontak
+              </a>
+            </nav>
+
+            {/* Right actions */}
+            <div className="flex items-center space-x-4">
+              <button className="relative p-2 text-[#1C1C1A] hover:text-[#6B4226] transition">
+                <ShoppingCart size={20} />
+                <span className="absolute -top-1 -right-1 w-5 h-5 bg-[#6B4226] text-white text-xs rounded-full flex items-center justify-center">
+                  2
+                </span>
+              </button>
+              <Button
+                onClick={scrollToCatalog}
+                variant="default"
+                className="hidden md:inline-flex bg-[#6B4226] hover:bg-[#5A3721] text-white rounded-full px-6"
+              >
+                Mulai Eksplorasi
+              </Button>
+
+              {/* Mobile menu toggle */}
+              <button
+                className="md:hidden p-2"
+                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                aria-label="Menu"
+              >
+                {mobileMenuOpen ? <X size={22} /> : <Menu size={22} />}
+              </button>
+            </div>
+          </div>
+
+          {/* Mobile fullscreen menu */}
+          <div
+            className={`fixed inset-0 bg-[#F5F0E8] z-40 flex flex-col items-center justify-center space-y-8 text-2xl font-['Playfair_Display'] transition-all duration-500 md:hidden ${
+              mobileMenuOpen
+                ? "opacity-100 translate-x-0"
+                : "opacity-0 translate-x-full pointer-events-none"
+            }`}
+          >
+            <button
+              className="absolute top-6 right-6 p-2"
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              <X size={28} />
+            </button>
+            <a
+              href="#koleksi"
+              onClick={() => setMobileMenuOpen(false)}
+              className="hover:text-[#6B4226]"
+            >
+              Koleksi
+            </a>
+            <a
+              href="#tentang"
+              onClick={() => setMobileMenuOpen(false)}
+              className="hover:text-[#6B4226]"
+            >
+              Tentang Kami
+            </a>
+            <a
+              href="#inspirasi"
+              onClick={() => setMobileMenuOpen(false)}
+              className="hover:text-[#6B4226]"
+            >
+              Inspirasi
+            </a>
+            <a
+              href="#kontak"
+              onClick={() => setMobileMenuOpen(false)}
+              className="hover:text-[#6B4226]"
+            >
+              Kontak
+            </a>
+            <Button
+              onClick={() => {
+                setMobileMenuOpen(false);
+                scrollToCatalog();
+              }}
+              className="bg-[#6B4226] hover:bg-[#5A3721] text-white rounded-full px-8 mt-4"
+            >
+              Mulai Eksplorasi
+            </Button>
+          </div>
+        </header>
+
+        {/* ===== HERO PARALLAX ===== */}
+        <section
+          ref={heroRef}
+          className="relative h-screen flex items-center justify-center bg-cover bg-center text-white overflow-hidden"
+          style={{
+            backgroundImage:
+              "url('https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?ixlib=rb-4.0.3&auto=format&fit=crop&w=1600&q=80')",
+            backgroundSize: "cover",
+          }}
+        >
+          {/* Overlay */}
+          <div className="absolute inset-0 bg-[#1C1C1A]/45" />
+          <div className="relative z-10 text-center max-w-4xl px-6">
+            <ScrollReveal>
+              <h1 className="font-['Playfair_Display'] text-5xl md:text-7xl font-bold leading-tight mb-6">
+                Ruang Hidup yang Berbicara
+              </h1>
+            </ScrollReveal>
+            <ScrollReveal delay={200}>
+              <p className="text-lg md:text-xl font-light mb-10 text-[#F5F0E8]/90 max-w-2xl mx-auto">
+                Furnitur bukan sekadar objek — ia adalah napas dari rumahmu.
+              </p>
+            </ScrollReveal>
+            <ScrollReveal delay={400}>
+              <Button
+                onClick={scrollToCatalog}
+                className="bg-[#6B4226] hover:bg-[#5A3721] text-white rounded-full px-10 py-6 text-lg"
+              >
+                Jelajahi Koleksi
+              </Button>
+            </ScrollReveal>
+          </div>
+          {/* Scroll indicator */}
+          <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-10 animate-[bounce-slow_2s_infinite]">
+            <ChevronDown size={36} className="text-white/70" />
+          </div>
+        </section>
+
+        {/* ===== BRAND STATEMENT ===== */}
+        <section className="py-28 bg-[#F5F0E8]">
+          <ScrollReveal className="text-center max-w-4xl mx-auto px-6">
+            <h2 className="font-['Playfair_Display'] italic text-3xl md:text-5xl text-[#1C1C1A] mb-20 leading-relaxed">
+              &ldquo;Kami tidak menjual furnitur. Kami menjual perasaan
+              pulang.&rdquo;
+            </h2>
+          </ScrollReveal>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-10 max-w-5xl mx-auto px-6">
+            <ScrollReveal delay={100} className="text-center">
+              <div className="w-16 h-16 mx-auto mb-5 rounded-full bg-[#C4A882]/20 flex items-center justify-center text-[#6B4226]">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="28"
+                  height="28"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                >
+                  <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
+                </svg>
+              </div>
+              <h3 className="font-['Playfair_Display'] text-xl font-semibold mb-2">
+                Handcrafted
+              </h3>
+              <p className="text-sm text-[#1C1C1A]/70">
+                Setiap perabot dibuat dengan tangan oleh pengrajin pilihan.
+              </p>
+            </ScrollReveal>
+            <ScrollReveal delay={200} className="text-center">
+              <div className="w-16 h-16 mx-auto mb-5 rounded-full bg-[#C4A882]/20 flex items-center justify-center text-[#6B4226]">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="28"
+                  height="28"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                >
+                  <path d="M12 2a10 10 0 1010 10A10 10 0 0012 2zm0 18a8 8 0 118-8 8 8 0 01-8 8z" />
+                  <path d="M12 6a2 2 0 100 4 2 2 0 000-4zm0 6a4 4 0 100 8 4 4 0 000-8z" />
+                </svg>
+              </div>
+              <h3 className="font-['Playfair_Display'] text-xl font-semibold mb-2">
+                Sustainable
+              </h3>
+              <p className="text-sm text-[#1C1C1A]/70">
+                Kayu bersertifikat, proses ramah lingkungan.
+              </p>
+            </ScrollReveal>
+            <ScrollReveal delay={300} className="text-center">
+              <div className="w-16 h-16 mx-auto mb-5 rounded-full bg-[#C4A882]/20 flex items-center justify-center text-[#6B4226]">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="28"
+                  height="28"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                >
+                  <circle cx="12" cy="12" r="10" />
+                  <polyline points="12 6 12 12 16 14" />
+                </svg>
+              </div>
+              <h3 className="font-['Playfair_Display'] text-xl font-semibold mb-2">
+                Timeless
+              </h3>
+              <p className="text-sm text-[#1C1C1A]/70">
+                Desain yang melampaui tren, abadi sepanjang masa.
+              </p>
+            </ScrollReveal>
+          </div>
+        </section>
+
+        {/* ===== PRODUCT CATALOG ===== */}
+        <section id="katalog" className="py-28 bg-white">
+          <div className="max-w-7xl mx-auto px-6">
+            <ScrollReveal>
+              <h2 className="font-['Playfair_Display'] text-4xl md:text-5xl text-center mb-16">
+                Koleksi Kami
+              </h2>
+            </ScrollReveal>
+
+            {/* Filter bar */}
+            <div className="flex flex-wrap justify-center gap-3 mb-14">
+              {filters.map((f) => (
+                <button
+                  key={f}
+                  onClick={() => setActiveFilter(f)}
+                  className={`px-6 py-2 rounded-full border transition-all duration-300 text-sm font-medium ${
+                    activeFilter === f
+                      ? "bg-[#6B4226] text-white border-[#6B4226]"
+                      : "border-[#C4A882] text-[#1C1C1A] hover:bg-[#C4A882]/20"
+                  }`}
+                >
+                  {f}
+                </button>
+              ))}
+            </div>
+
+            {/* Product grid with remount animation on filter change */}
+            <div key={activeFilter} className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
+              {filteredProducts.map((product, index) => (
+                <div
+                  key={product.id}
+                  className="group bg-[#F5F0E8] rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-all duration-500"
+                  style={{
+                    animation: `fadeInUp 0.5s ease-out ${index * 0.1}s both`,
+                  }}
+                >
+                  <div className="relative overflow-hidden aspect-[4/3]">
+                    <img
+                      src={product.gambar}
+                      alt={product.nama}
+                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                    />
+                    <div className="absolute inset-0 bg-[#1C1C1A]/0 group-hover:bg-[#1C1C1A]/20 transition-all duration-500 flex items-center justify-center">
+                      <span className="text-white opacity-0 group-hover:opacity-100 transition duration-300 flex items-center gap-2">
+                        <Search size={18} />
+                        Lihat Detail
+                      </span>
+                    </div>
+                  </div>
+                  <div className="p-5">
+                    <h3 className="font-['Playfair_Display'] text-xl font-semibold mb-1">
+                      {product.nama}
+                    </h3>
+                    <p className="text-sm text-[#1C1C1A]/60 mb-3">
+                      {product.material}
+                    </p>
+                    <div className="flex items-center justify-between">
+                      <span className="font-bold text-[#6B4226] text-lg">
+                        {product.harga}
+                      </span>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="border-[#C4A882] text-[#6B4226] hover:bg-[#6B4226] hover:text-white rounded-full"
+                      >
+                        <Heart size={16} className="mr-1" /> Wishlist
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* ===== PARALLAX ATMOSPHERE ===== */}
+        <section
+          ref={atmosRef}
+          className="relative h-[70vh] flex items-center justify-center bg-cover bg-center text-white overflow-hidden"
+          style={{
+            backgroundImage:
+              "url('https://images.unsplash.com/photo-1506905925346-21bda4d32df4?ixlib=rb-4.0.3&auto=format&fit=crop&w=1600&q=80')",
+            backgroundSize: "cover",
+          }}
+        >
+          <div className="absolute inset-0 bg-[#1C1C1A]/40" />
+          <div className="relative z-10 text-center max-w-4xl px-6">
+            <ScrollReveal>
+              <h2 className="font-['Playfair_Display'] text-4xl md:text-6xl font-bold mb-8 leading-snug">
+                Dari hutan ke ruang tamumu — setiap potongan kayu punya cerita.
+              </h2>
+            </ScrollReveal>
+            <ScrollReveal delay={200}>
+              <Button
+                variant="outline"
+                className="border-white text-white hover:bg-white hover:text-[#1C1C1A] rounded-full px-10 py-6 text-lg"
+              >
+                Lihat Proses Pembuatan
+              </Button>
+            </ScrollReveal>
+          </div>
+        </section>
+
+        {/* ===== TENTANG KAMI ===== */}
+        <section id="tentang" className="py-28 bg-[#F5F0E8]">
+          <div className="max-w-6xl mx-auto px-6 grid md:grid-cols-2 gap-14 items-center">
+            <ScrollReveal>
+              <div>
+                <h2 className="font-['Playfair_Display'] text-4xl md:text-5xl mb-8">
+                  Cerita di Balik Setiap Ukiran
+                </h2>
+                <p className="text-[#1C1C1A]/80 leading-relaxed mb-5">
+                  Berawal dari kecintaan terhadap kehangatan kayu, Kayu &amp;
+                  Rasa hadir sejak 2015 dengan misi sederhana: menghadirkan
+                  furnitur yang bukan hanya indah, tetapi terasa hidup. Setiap
+                  desain kami awali dengan mendengarkan cerita dari calon
+                  pemiliknya.
+                </p>
+                <p className="text-[#1C1C1A]/80 leading-relaxed mb-8">
+                  Di tangan para perajin yang mewarisi keahlian turun-temurun,
+                  material mentah berubah menjadi karya fungsional yang mampu
+                  menjadi pusat percakapan dalam sebuah ruangan. Kami
+                  memastikan setiap sambungan kayu, setiap sentuhan akhir,
+                  membawa karakter dan kejujuran.
+                </p>
+                <blockquote className="font-['Playfair_Display'] italic text-2xl text-[#6B4226] border-l-4 border-[#C4A882] pl-6">
+                  &ldquo;Rumah bukan hanya tempat tinggal, tapi tempat rasa
+                  tumbuh.&rdquo; <br />
+                  <span className="text-lg not-italic text-[#1C1C1A]/70">
+                    — Andi Wijaya, Pendiri
+                  </span>
+                </blockquote>
+              </div>
+            </ScrollReveal>
+            <ScrollReveal delay={200}>
+              <div className="rounded-2xl overflow-hidden shadow-lg">
+                <img
+                  src="https://images.unsplash.com/photo-1581539250439-c96689b516dd?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+                  alt="Pengrajin Kayu"
+                  className="w-full h-auto object-cover"
+                />
+              </div>
+            </ScrollReveal>
+          </div>
+        </section>
+
+        {/* ===== INSPIRASI / LOOKBOOK ===== */}
+        <section id="inspirasi" className="py-28 bg-white">
+          <div className="max-w-7xl mx-auto px-6">
+            <ScrollReveal>
+              <h2 className="font-['Playfair_Display'] text-4xl md:text-5xl text-center mb-20">
+                Ruang yang Kami Ciptakan
+              </h2>
+            </ScrollReveal>
+            <div className="masonry-grid">
+              {[
+                {
+                  src: "https://images.unsplash.com/photo-1616486029423-aaa4789e8c9a?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+                  title: "Ruang Tamu Nordic",
+                  wide: true,
+                },
+                {
+                  src: "https://images.unsplash.com/photo-1585412727339-54e4bae3bbf9?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+                  title: "Kamar Tenang",
+                },
+                {
+                  src: "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+                  title: "Dapur Bersahaja",
+                },
+                {
+                  src: "https://images.unsplash.com/photo-1595526114035-0d45ed16cfbf?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+                  title: "Sudut Baca",
+                },
+                {
+                  src: "https://images.unsplash.com/photo-1538688525198-9b88f6f53126?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+                  title: "Teras Sore",
+                  tall: true,
+                },
+                {
+                  src: "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+                  title: "Ruang Keluarga",
+                },
+              ].map((item, i) => (
+                <ScrollReveal
+                  key={i}
+                  delay={i * 100}
+                  className="masonry-item"
+                >
+                  <div className="relative group overflow-hidden rounded-2xl">
+                    <img
+                      src={item.src}
+                      alt={item.title}
+                      className="w-full h-auto object-cover transition-transform duration-700 group-hover:scale-105"
+                    />
+                    <div className="absolute inset-0 bg-[#1C1C1A]/0 group-hover:bg-[#1C1C1A]/40 transition-all duration-500 flex items-end p-5">
+                      <h3 className="text-white font-['Playfair_Display'] text-xl opacity-0 group-hover:opacity-100 transition duration-300 translate-y-2 group-hover:translate-y-0">
+                        {item.title}
+                      </h3>
+                    </div>
+                  </div>
+                </ScrollReveal>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* ===== TESTIMONI ===== */}
+        <section className="py-28 bg-[#1C1C1A] text-white">
+          <div className="max-w-6xl mx-auto px-6">
+            <ScrollReveal>
+              <h2 className="font-['Playfair_Display'] text-4xl md:text-5xl text-center mb-16">
+                Cerita Mereka, Rumah Mereka
+              </h2>
+            </ScrollReveal>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              {[
+                {
+                  name: "Rina Anggraini",
+                  city: "Jakarta",
+                  stars: 5,
+                  quote:
+                    "Furnitur dari Kayu & Rasa membuat rumah saya terasa begitu hangat. Kualitasnya luar biasa, desainnya timeless.",
+                  avatar:
+                    "https://randomuser.me/api/portraits/women/44.jpg",
+                },
+                {
+                  name: "Bayu Prasetyo",
+                  city: "Bandung",
+                  stars: 5,
+                  quote:
+                    "Proses pemesanan sangat personal. Saya merasa dilibatkan dalam setiap detail. Hasilnya melebihi ekspektasi.",
+                  avatar:
+                    "https://randomuser.me/api/portraits/men/32.jpg",
+                },
+                {
+                  name: "Dewi Lestari",
+                  city: "Surabaya",
+                  stars: 4,
+                  quote:
+                    "Saya suka bagaimana mereka memadukan estetika modern dengan sentuhan alami. Rumah jadi lebih hidup.",
+                  avatar:
+                    "https://randomuser.me/api/portraits/women/68.jpg",
+                },
+              ].map((t, i) => (
+                <ScrollReveal key={i} delay={i * 150}>
+                  <div className="bg-[#2A2A28] p-8 rounded-2xl h-full flex flex-col">
+                    <div className="flex items-center gap-4 mb-6">
+                      <img
+                        src={t.avatar}
+                        alt={t.name}
+                        className="w-14 h-14 rounded-full object-cover border-2 border-[#C4A882]"
+                      />
+                      <div>
+                        <h4 className="font-['Playfair_Display'] text-lg">
+                          {t.name}
+                        </h4>
+                        <p className="text-sm text-[#C4A882]">{t.city}</p>
+                      </div>
+                    </div>
+                    <div className="flex mb-4">
+                      {[...Array(5)].map((_, s) => (
+                        <Star
+                          key={s}
+                          size={16}
+                          className={
+                            s < t.stars
+                              ? "text-[#C4A882] fill-current"
+                              : "text-gray-500"
+                          }
+                        />
+                      ))}
+                    </div>
+                    <p className="italic text-[#F5F0E8]/80 flex-grow">
+                      &ldquo;{t.quote}&rdquo;
+                    </p>
+                  </div>
+                </ScrollReveal>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* ===== NEWSLETTER ===== */}
+        <section id="kontak" className="py-28 bg-[#6B4226] text-white">
+          <div className="max-w-3xl mx-auto text-center px-6">
+            <ScrollReveal>
+              <h2 className="font-['Playfair_Display'] text-4xl md:text-5xl mb-6">
+                Jadilah Bagian dari Cerita Kami
+              </h2>
+            </ScrollReveal>
+            <ScrollReveal delay={100}>
+              <p className="text-lg text-[#F5F0E8]/80 mb-10">
+                Dapatkan inspirasi, koleksi eksklusif, dan penawaran khusus.
+              </p>
+            </ScrollReveal>
+            <ScrollReveal delay={200}>
+              <form
+                className="flex flex-col sm:flex-row gap-4 justify-center"
+                onSubmit={(e) => e.preventDefault()}
+              >
+                <Input
+                  type="email"
+                  placeholder="Alamat email Anda"
+                  className="w-full sm:w-80 bg-white/10 border-white/30 text-white placeholder:text-white/60 rounded-full px-6 py-6 text-base"
+                />
+                <Button
+                  type="submit"
+                  className="bg-white text-[#6B4226] hover:bg-[#F5F0E8] rounded-full px-10 py-6 text-base font-semibold"
+                >
+                  Bergabung
+                </Button>
+              </form>
+            </ScrollReveal>
+          </div>
+        </section>
+
+        {/* ===== FOOTER ===== */}
+        <footer className="bg-[#1C1C1A] text-[#F5F0E8] py-20">
+          <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-4 gap-10">
+            <div>
+              <h4 className="font-['Playfair_Display'] italic text-2xl text-[#C4A882] mb-4">
+                Kayu &amp; Rasa
+              </h4>
+              <p className="text-sm text-[#F5F0E8]/70">
+                Setiap sudut ruangan bercerita.
+              </p>
+            </div>
+            <div>
+              <h5 className="font-semibold mb-4 text-[#C4A882]">Navigasi</h5>
+              <ul className="space-y-2 text-sm">
+                <li>
+                  <a href="#koleksi" className="hover:text-white transition">
+                    Koleksi
+                  </a>
+                </li>
+                <li>
+                  <a href="#tentang" className="hover:text-white transition">
+                    Tentang Kami
+                  </a>
+                </li>
+                <li>
+                  <a href="#inspirasi" className="hover:text-white transition">
+                    Inspirasi
+                  </a>
+                </li>
+              </ul>
+            </div>
+            <div>
+              <h5 className="font-semibold mb-4 text-[#C4A882]">Layanan</h5>
+              <ul className="space-y-2 text-sm">
+                <li>
+                  <a href="#" className="hover:text-white transition">
+                    Konsultasi Desain
+                  </a>
+                </li>
+                <li>
+                  <a href="#" className="hover:text-white transition">
+                    Pengiriman
+                  </a>
+                </li>
+                <li>
+                  <a href="#" className="hover:text-white transition">
+                    Garansi
+                  </a>
+                </li>
+              </ul>
+            </div>
+            <div>
+              <h5 className="font-semibold mb-4 text-[#C4A882]">Kontak</h5>
+              <p className="text-sm mb-2">hello@kayudanrasa.com</p>
+              <p className="text-sm mb-5">+62 812 3456 7890</p>
+              <div className="flex space-x-4">
+                <a
+                  href="#"
+                  className="text-[#C4A882] hover:text-white transition"
+                  aria-label="Instagram"
+                >
+                  <span className="text-sm font-bold">IG</span>
+                </a>
+                <a
+                  href="#"
+                  className="text-[#C4A882] hover:text-white transition"
+                  aria-label="Pinterest"
+                >
+                  <span className="text-sm font-bold">PIN</span>
+                </a>
+                <a
+                  href="#"
+                  className="text-[#C4A882] hover:text-white transition"
+                  aria-label="TikTok"
+                >
+                  <span className="text-sm font-bold">TT</span>
+                </a>
+              </div>
+            </div>
+          </div>
+          <div className="max-w-7xl mx-auto px-6 mt-12 pt-8 border-t border-[#F5F0E8]/10 text-center text-sm text-[#F5F0E8]/50">
+            &copy; 2025 Kayu &amp; Rasa. Semua hak dilindungi.
+          </div>
+        </footer>
+
+        {/* ===== BACK TO TOP ===== */}
+        <button
+          onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+          className={`fixed bottom-6 right-6 z-50 w-12 h-12 rounded-full bg-[#6B4226] text-white shadow-lg flex items-center justify-center transition-all duration-300 ${
+            showBackToTop ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4 pointer-events-none"
+          }`}
+          aria-label="Kembali ke atas"
+        >
+          <ArrowUp size={20} />
+        </button>
+      </div>
+    </>
+  );
+}

@@ -293,12 +293,12 @@ const LandingPage = () => {
             </CardContent>
           </Card>
 
-          <div className="mt-6 flex justify-center">
+          {/* <div className="mt-6 flex justify-center">
             <span className="bg-white/20 backdrop-blur-md px-5 py-2 rounded-full text-sm font-medium">
               <FaUser className="inline mr-2" /> Welcome back, Rizky! Lihat
               penawaran spesial Anda.
             </span>
-          </div>
+          </div> */}
         </div>
       </section>
 
