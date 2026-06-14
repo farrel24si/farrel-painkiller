@@ -1,5 +1,6 @@
 // src/pages/LandingPage.jsx
 import React, { useState, useEffect, useRef } from "react";
+import FloatingChat from "./../components/FloatingChat";
 import { Link } from "react-router-dom";
 import {
   FaBed, FaSwimmingPool, FaSpa, FaDumbbell, FaParking, FaUtensils,
@@ -805,29 +806,26 @@ const LandingPage = () => {
 
       {/* FLOATING CHAT & BACK TO TOP */}
       <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-4">
-        <button className="bg-[#25D366] text-white p-4 rounded-full shadow-xl hover:scale-110 transition-transform relative group">
+        {showBackToTop && (
+          <button
+            onClick={scrollToTop}
+            className="bg-white p-3 w-12 h-12 rounded-full flex items-center justify-center shadow-lg hover:shadow-xl transition-all text-gray-600 hover:text-[#3BCBBE]"
+            aria-label="Back to top"
+          >
+            <FaArrowUp />
+          </button>
+        )}
+
+        <button className="bg-[#25D366] text-white p-4 w-14 h-14 rounded-full flex items-center justify-center shadow-xl hover:scale-110 transition-transform relative group">
           <FaWhatsapp className="text-2xl" />
           <span className="absolute right-full mr-3 top-1/2 -translate-y-1/2 bg-gray-800 text-white text-xs py-1 px-3 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
             Chat WhatsApp
           </span>
         </button>
-        <button className="bg-[#313860] text-white p-4 rounded-full shadow-xl hover:scale-110 transition-transform text-sm font-bold relative group">
-          <span className="absolute right-full mr-3 top-1/2 -translate-y-1/2 bg-gray-800 text-white text-xs py-1 px-3 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
-            Live Chat
-          </span>
-          💬
-        </button>
+        
+        {/* Menggunakan Komponen Floating Chat Terintegrasi AI */}
+        <FloatingChat />
       </div>
-
-      {showBackToTop && (
-        <button
-          onClick={scrollToTop}
-          className="fixed bottom-40 right-6 z-50 bg-white p-3 rounded-full shadow-lg hover:shadow-xl transition-all text-gray-600 hover:text-[#3BCBBE]"
-          aria-label="Back to top"
-        >
-          <FaArrowUp />
-        </button>
-      )}
     </div>
   );
 };
