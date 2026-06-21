@@ -4,6 +4,8 @@ import { Routes, Route } from "react-router-dom";
 // Layouts
 import MainLayout from "./layouts/MainLayout";
 import AuthLayout from "./layouts/AuthLayout";
+import MemberLayout from "./layouts/MemberLayout";
+import GuestLayout from "./layouts/GuestLayout";
 import Loading from "./components/Loading";
 import ErrorPage from "./pages/ErrorPage";
 import NotFound from "./pages/NotFound";
@@ -17,9 +19,10 @@ const Users = React.lazy(() => import("./pages/Users"));
 const Reviews = React.lazy(() => import("./pages/Reviews"));
 const Inventori = React.lazy(() => import("./pages/Inventori"));
 const InventoriDetail = React.lazy(() => import("./pages/InventoriDetail"));
-
-// === TAMBAHAN BARU: Lazy Loading untuk Notes ===
 const Notes = React.lazy(() => import("./pages/Notes"));
+
+// Member Pages
+const MemberDashboard = React.lazy(() => import("./pages/MemberDashboard"));
 
 // Auth
 const Login = React.lazy(() => import("./pages/auth/Login"));
@@ -31,8 +34,11 @@ export default function App() {
     <Suspense fallback={<Loading />}>
       <Routes>
         
-        {/* PUBLIC ROUTE */}
-        <Route path="/" element={<LandingPage />} />
+        {/* PUBLIC ROUTE (Hanya menggunakan GuestLayout) */}
+        <Route element={<GuestLayout />}>
+          <Route path="/" element={<LandingPage />} />
+          {/* Kalau nanti ada halaman publik lain, taruh di sini */}
+        </Route>
 
         {/* MAIN LAYOUT (Admin Panel) */}
         <Route element={<MainLayout />}>
@@ -43,9 +49,12 @@ export default function App() {
           <Route path="/inventory" element={<Inventori />} />
           <Route path="/inventory/:id" element={<InventoriDetail />} />
           <Route path="/reviews" element={<Reviews />} />
-          
-          {/* === TAMBAHAN BARU: Route untuk Notes === */}
           <Route path="/notes" element={<Notes />} />
+        </Route>
+
+        {/* MEMBER LAYOUT (Member Area) */}
+        <Route element={<MemberLayout />}>
+          <Route path="/member" element={<MemberDashboard />} />
         </Route>
 
         {/* AUTH LAYOUT */}

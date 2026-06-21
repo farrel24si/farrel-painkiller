@@ -123,9 +123,7 @@ export default function Header({ title = "Dashboard", breadcrumb = ["Pages", "Da
             ) : (
               <DropdownMenuLabel>My Account</DropdownMenuLabel>
             )}
-            <DropdownMenuItem className="cursor-pointer hover:text-[#3BCBBE] focus:text-[#3BCBBE]">Profile</DropdownMenuItem>
-            <DropdownMenuItem className="cursor-pointer hover:text-[#3BCBBE] focus:text-[#3BCBBE]">Billing</DropdownMenuItem>
-            <DropdownMenuItem className="cursor-pointer hover:text-[#3BCBBE] focus:text-[#3BCBBE]">Settings</DropdownMenuItem>
+
             <DropdownMenuSeparator />
             {/* Fungsi Logout dipanggil di sini */}
             <DropdownMenuItem onClick={handleLogout} className="cursor-pointer text-red-500 focus:text-red-500">

@@ -1,10 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import { Mail, Lock, Eye, EyeOff, ArrowLeft, Home } from "lucide-react";
 import { usersAPI } from "../../services/usersAPI";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Card, CardContent } from "@/components/ui/card";
-import { FaEye, FaEyeSlash, FaSignInAlt } from "react-icons/fa";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -22,7 +19,6 @@ export default function Login() {
     e.preventDefault();
     setError("");
 
-    // Validasi sederhana
     if (!formData.email || !formData.password) {
       setError("Email dan password harus diisi.");
       return;
@@ -36,7 +32,12 @@ export default function Login() {
         const loggedInUser = users[0];
         localStorage.setItem("userSession", JSON.stringify(loggedInUser));
         alert(`Selamat datang, ${loggedInUser.name}!`);
-        navigate("/dashboard");
+
+        if (loggedInUser.role === "admin") {
+          navigate("/dashboard");
+        } else {
+          navigate("/member");
+        }
       } else {
         setError("Email atau Password salah!");
       }
@@ -48,111 +49,162 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#F8F9FA] to-[#E2E8F0] px-4">
-      <Card className="w-full max-w-md p-8 rounded-[28px] shadow-2xl border-0 bg-white/80 backdrop-blur-lg">
-        <CardContent className="p-0 space-y-6">
-          {/* Judul */}
-          <div className="text-center">
-            <h2 className="text-3xl font-bold text-gray-800 mb-1">
-              Welcome Back 👋
-            </h2>
-            <p className="text-sm text-gray-500">
-              Masuk ke Capella Hotel Management
-            </p>
+    <div className="min-h-screen flex font-['Helvetica']">
+      {/* Left Panel – gambar + gradien + logo + teks */}
+      <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden">
+        <div
+          className="absolute inset-0 bg-cover bg-center"
+          style={{
+            backgroundImage:
+              "url('https://images.unsplash.com/photo-1564013799919-ab600027ffc6?auto=format&fit=crop&w=1200&q=80')",
+          }}
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
+
+        <div className="relative z-10 w-full p-8 flex flex-col justify-between h-full">
+          {/* Logo di kiri atas */}
+          <div className="flex items-center space-x-2">
+            <img
+              src="src/assets/logo1.png" // ganti dengan path logo Anda
+              alt="Capella Hotel"
+              className="h-8 w-auto"
+            />
+            <span className="text-white text-xl font-bold tracking-widest"></span>
           </div>
 
-          {/* Error Alert */}
+          {/* Teks di bawah */}
+          <div className="text-white max-w-md animate-fade-in-up">
+            <h1 className="text-3xl font-semibold leading-tight">
+              Liburan Tenang.<br />Rewards Datang.
+            </h1>
+            <p className="text-base opacity-90 mt-2 leading-relaxed">
+              Masuk ke akun Anda untuk mengelola reservasi kamar, menukar poin Capella Rewards, dan menikmati promo eksklusif khusus member.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* Right Panel – form login */}
+      <div className="w-full lg:w-1/2 flex items-center justify-center px-4 py-6 bg-gradient-to-br from-[#F8F9FA] to-[#E2E8F0]">
+        <div className="w-full max-w-md bg-white rounded-3xl shadow-xl p-6 md:p-8 animate-fade-in-up">
+          {/* Logo mobile */}
+          <div className="lg:hidden flex justify-center mb-4">
+            <img src="/assets/logo.png" alt="Capella" className="h-10 w-auto" />
+          </div>
+
+          <div className="text-center mb-5">
+            <h2 className="text-2xl font-bold text-[#3BCBBE]">LOGIN</h2>
+            <p className="text-sm text-gray-500">Sign in to continue</p>
+          </div>
+
           {error && (
-            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl text-sm">
+            <div className="bg-red-50 border-l-4 border-red-500 text-red-700 px-4 py-2 rounded-r-xl text-sm mb-4">
               {error}
             </div>
           )}
 
-          <form onSubmit={handleSubmit} className="space-y-5">
+          <form onSubmit={handleSubmit} className="space-y-4">
             {/* Email */}
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-1">
-                Email Address
-              </label>
-              <Input
-                type="email"
-                name="email"
-                value={formData.email}
-                onChange={handleChange}
-                required
-                disabled={loading}
-                className="rounded-xl border-gray-200 focus:border-[#3BCBBE]"
-                placeholder="you@example.com"
-              />
+              <div className="relative">
+                <Mail
+                  className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"
+                  size={20}
+                />
+                <input
+                  type="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  required
+                  disabled={loading}
+                  className="w-full pl-12 pr-4 py-3.5 bg-gray-50 border border-gray-200 rounded-2xl text-sm text-gray-700 placeholder-gray-400 outline-none focus:ring-2 focus:ring-[#3BCBBE] focus:border-[#3BCBBE] transition-all"
+                  placeholder="Email address"
+                />
+              </div>
             </div>
 
-            {/* Password dengan tombol show/hide */}
+            {/* Password */}
             <div>
-              <div className="flex justify-between items-center mb-1">
-                <label className="text-sm font-semibold text-gray-700">
-                  Password
-                </label>
-                <Link
-                  to="/forgot"
-                  className="text-xs font-medium text-[#3BCBBE] hover:underline"
-                >
-                  Forgot password?
-                </Link>
-              </div>
               <div className="relative">
-                <Input
+                <Lock
+                  className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"
+                  size={20}
+                />
+                <input
                   type={showPassword ? "text" : "password"}
                   name="password"
                   value={formData.password}
                   onChange={handleChange}
                   required
                   disabled={loading}
-                  className="rounded-xl border-gray-200 focus:border-[#3BCBBE] pr-10"
-                  placeholder="••••••••"
+                  className="w-full pl-12 pr-12 py-3.5 bg-gray-50 border border-gray-200 rounded-2xl text-sm text-gray-700 placeholder-gray-400 outline-none focus:ring-2 focus:ring-[#3BCBBE] focus:border-[#3BCBBE] transition-all"
+                  placeholder="Password"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600"
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-700 transition-colors"
                 >
-                  {showPassword ? <FaEyeSlash /> : <FaEye />}
+                  {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                 </button>
               </div>
             </div>
 
-            {/* Tombol Login */}
-            <Button
+            {/* Remember me & Forgot password */}
+            <div className="flex items-center justify-between">
+              <label className="flex items-center text-sm text-gray-600 cursor-pointer">
+                <input
+                  type="checkbox"
+                  className="mr-2 rounded border-gray-300 text-[#3BCBBE] focus:ring-[#3BCBBE]"
+                />
+                Remember me
+              </label>
+              <Link
+                to="/forgot"
+                className="text-sm text-[#3BCBBE] hover:underline"
+              >
+                Forgot password?
+              </Link>
+            </div>
+
+            {/* Submit */}
+            <button
               type="submit"
               disabled={loading}
-              className="w-full bg-[#3BCBBE] hover:bg-[#2aa89d] text-white font-bold py-6 rounded-xl shadow-md transition-all hover:shadow-lg flex items-center justify-center gap-2"
+              className={`w-full py-3.5 rounded-2xl text-sm font-bold tracking-wide transition-all ${
+                loading
+                  ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+                  : "bg-[#3BCBBE] text-white shadow-md shadow-[#3BCBBE]/20 hover:-translate-y-0.5 hover:shadow-lg hover:bg-[#2aa89d]"
+              }`}
             >
-              {loading ? (
-                "Memverifikasi..."
-              ) : (
-                <>
-                  <FaSignInAlt /> Login
-                </>
-              )}
-            </Button>
-
-            <p className="text-center text-sm text-gray-500 mt-4">
-              Don't have an account?{" "}
-              <Link to="/register" className="text-[#3BCBBE] font-semibold hover:underline">
-                Sign up
-              </Link>
-            </p>
+              {loading ? "Authenticating..." : "Sign In"}
+            </button>
           </form>
 
-          <div className="text-center">
-            <Link
-              to="/"
-              className="text-xs text-gray-400 hover:text-[#3BCBBE] transition-colors"
-            >
-              ← Kembali ke Beranda
-            </Link>
+          {/* Footer links */}
+          <div className="mt-6 text-center space-y-3">
+            <p className="text-sm text-gray-500">
+              Don't have an account?{" "}
+              <Link
+                to="/register"
+                className="text-[#3BCBBE] font-bold hover:underline"
+              >
+                Create one
+              </Link>
+            </p>
+            <div className="pt-3 border-t border-gray-200">
+              <Link
+                to="/"
+                className="inline-flex items-center text-sm text-gray-400 hover:text-[#3BCBBE] transition-colors"
+              >
+                <ArrowLeft size={16} className="mr-1" />
+                Back to Homepage
+              </Link>
+            </div>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     </div>
   );
 }
