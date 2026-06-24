@@ -23,6 +23,7 @@ const Notes = React.lazy(() => import("./pages/Notes"));
 
 // Member Pages
 const MemberDashboard = React.lazy(() => import("./pages/MemberDashboard"));
+const RewardsPage = React.lazy(() => import("./pages/RewardsPage"));
 
 // Auth
 const Login = React.lazy(() => import("./pages/auth/Login"));
@@ -55,6 +56,7 @@ export default function App() {
         {/* MEMBER LAYOUT (Member Area) */}
         <Route element={<MemberLayout />}>
           <Route path="/member" element={<MemberDashboard />} />
+          <Route path="/rewards" element={<RewardsPage />} />
         </Route>
 
         {/* AUTH LAYOUT */}

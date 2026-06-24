@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { Outlet, Link } from "react-router-dom";
+import { Outlet, Link, useLocation } from "react-router-dom";
 import FloatingChat from "../components/FloatingChat";
+import Loading from "../components/Loading";
 import {
   FaUser, FaBars, FaTimes, FaArrowUp, FaWhatsapp,
   FaInstagram, FaFacebook, FaTwitter, FaPhoneAlt, FaEnvelope
@@ -144,6 +145,16 @@ function Header() {
 // ======================= LAYOUT UTAMA =======================
 export default function GuestLayout() {
   const [showBackToTop, setShowBackToTop] = useState(false);
+  const location = useLocation();
+  const [isNavigating, setIsNavigating] = useState(false);
+
+  useEffect(() => {
+    setIsNavigating(true);
+    const timer = setTimeout(() => {
+      setIsNavigating(false);
+    }, 800);
+    return () => clearTimeout(timer);
+  }, [location.pathname]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -159,6 +170,11 @@ export default function GuestLayout() {
 
   return (
     <div className="min-h-screen bg-[#F8F9FA] font-sans antialiased flex flex-col">
+      {isNavigating && (
+        <div className="fixed inset-0 z-[9999] bg-slate-50">
+          <Loading />
+        </div>
+      )}
       <style>{`html { scroll-behavior: smooth; }`}</style>
       
       <ReadingProgressBar />
@@ -202,8 +218,8 @@ export default function GuestLayout() {
             <ul className="space-y-3 text-gray-400 text-sm">
               <li><Link to="/login" className="hover:text-white transition-colors">Login</Link></li>
               <li><Link to="/register" className="hover:text-white transition-colors">Register</Link></li>
-              <li><a href="#" className="hover:text-white transition-colors">Kebijakan Privasi</a></li>
-              <li><a href="#" className="hover:text-white transition-colors">Syarat & Ketentuan</a></li>
+              <li><a href="/#policy" className="hover:text-white transition-colors">Kebijakan Privasi</a></li>
+              <li><a href="/#policy" className="hover:text-white transition-colors">Syarat & Ketentuan</a></li>
             </ul>
           </div>
           <div>
@@ -235,12 +251,7 @@ export default function GuestLayout() {
           </button>
         )}
 
-        <button className="bg-[#25D366] text-white p-4 w-14 h-14 rounded-full flex items-center justify-center shadow-xl hover:shadow-[0_0_25px_rgba(37,211,102,0.6)] hover:scale-110 transition-all relative group">
-          <FaWhatsapp className="text-2xl" />
-          <span className="absolute right-full mr-3 top-1/2 -translate-y-1/2 bg-gray-800 text-white text-xs py-1 px-3 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
-            Chat WhatsApp
-          </span>
-        </button>
+
 
         <FloatingChat />
       </div>

@@ -108,15 +108,21 @@ export default function MemberLayout() {
                     >
                       <User size={15} /> Profil Saya
                     </Link>
-                    <Link
-                      to="/member"
-                      onClick={() => setMenuOpen(false)}
+                    <a
+                      href="/member#riwayat"
+                      onClick={(e) => {
+                        if (window.location.pathname === '/member') {
+                           e.preventDefault();
+                           document.getElementById('riwayat')?.scrollIntoView({ behavior: 'smooth' });
+                        }
+                        setMenuOpen(false);
+                      }}
                       className="flex items-center gap-3 px-5 py-2.5 text-sm font-semibold text-gray-600 hover:bg-[#3BCBBE]/5 hover:text-[#3BCBBE] transition-colors"
                     >
                       <CalendarCheck size={15} /> Riwayat Booking
-                    </Link>
+                    </a>
                     <Link
-                      to="/member"
+                      to="/rewards"
                       onClick={() => setMenuOpen(false)}
                       className="flex items-center gap-3 px-5 py-2.5 text-sm font-semibold text-gray-600 hover:bg-[#3BCBBE]/5 hover:text-[#3BCBBE] transition-colors"
                     >

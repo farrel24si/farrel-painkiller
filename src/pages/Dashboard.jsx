@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
+import supabase from "../lib/supabaseClient";
 import { 
   FaBed, 
   FaCheckCircle, 
@@ -25,13 +26,62 @@ import Header from "../components/Header";
 import Card from "../components/Card";
 
 export default function Dashboard() {
-  
+  const [metricsData, setMetricsData] = useState({
+    totalBookings: 0,
+    availableRooms: 150,
+    todaysArrivals: 0,
+    revenue: 0
+  });
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchDashboardData = async () => {
+      try {
+        const { data: bookings, error } = await supabase
+          .from("bookings")
+          .select("*");
+          
+        if (error) throw error;
+        
+        const total = bookings.length;
+        
+        // Today's Date
+        const today = new Date();
+        const yyyy = today.getFullYear();
+        const mm = String(today.getMonth() + 1).padStart(2, '0');
+        const dd = String(today.getDate()).padStart(2, '0');
+        const todayStr = `${yyyy}-${mm}-${dd}`;
+        
+        const arrivals = bookings.filter(b => b.checkIn === todayStr).length;
+        
+        const rev = bookings
+          .filter(b => b.status !== "Cancelled")
+          .reduce((sum, b) => sum + (b.price || 0), 0);
+          
+        const active = bookings.filter(b => b.status === "Checked-In" || (b.status !== "Cancelled" && b.checkIn <= todayStr && b.checkOut >= todayStr)).length;
+        
+        setMetricsData({
+          totalBookings: total,
+          availableRooms: 150 - active,
+          todaysArrivals: arrivals,
+          revenue: rev
+        });
+      } catch (error) {
+        console.error("Error fetching dashboard data:", error.message);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    
+    fetchDashboardData();
+  }, []);
+
   // Data Metrik Atas
   const metrics = [
-    { title: "Total Bookings", value: "142", pct: "+12%", isPositive: true, icon: <FaBed /> },
-    { title: "Available Rooms", value: "38", pct: "+5%", isPositive: true, icon: <FaCheckCircle /> },
-    { title: "Today's Arrivals", value: "24", pct: "+2%", isPositive: true, icon: <FaUsers /> },
-    { title: "Revenue", value: "$12,450", pct: "+8%", isPositive: true, icon: <FaWallet /> },
+    { title: "Total Bookings", value: isLoading ? "..." : metricsData.totalBookings.toString(), pct: "+12%", isPositive: true, icon: <FaBed /> },
+    { title: "Available Rooms", value: isLoading ? "..." : metricsData.availableRooms.toString(), pct: "+5%", isPositive: true, icon: <FaCheckCircle /> },
+    { title: "Today's Arrivals", value: isLoading ? "..." : metricsData.todaysArrivals.toString(), pct: "+2%", isPositive: true, icon: <FaUsers /> },
+    { title: "Revenue", value: isLoading ? "..." : `$${metricsData.revenue.toLocaleString()}`, pct: "+8%", isPositive: true, icon: <FaWallet /> },
   ];
 
   // Data Area Chart
@@ -97,58 +147,6 @@ export default function Dashboard() {
           ))}
         </div>
 
-        {/* ROW 2: Banners */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-          {/* Left Banner */}
-          <Card className="lg:col-span-7 flex flex-col md:flex-row justify-between items-stretch">
-            <div className="flex flex-col justify-between items-start pr-4">
-              <div>
-                <p className="text-sm font-bold text-gray-400 mb-1">Built for hotel management</p>
-                <h2 className="text-2xl font-bold text-gray-800 mb-2">Capella System</h2>
-                <p className="text-sm text-gray-500 max-w-sm">
-                  From reservations, room services, to revenue tracking, seamlessly manage the ultimate hotel experience.
-                </p>
-              </div>
-              <button className="mt-6 flex items-center gap-2 text-sm font-bold text-gray-800 hover:text-[#3BCBBE] transition-colors overflow-hidden py-1">
-                Read more <FaArrowRight />
-              </button>
-            </div>
-            {/* Kotak Hijau Tema dengan Gradasi ke Putih */}
-            <div 
-              className="mt-4 md:mt-0 w-full md:w-[250px] rounded-[15px] flex items-center justify-center min-h-[150px] shadow-md flex-shrink-0"
-              style={{ backgroundImage: 'linear-gradient(to right, #3BCBBE, #FFFFFF)' }}
-            >
-               <h1 className="text-gray-800 text-2xl font-bold flex items-center gap-2">
-                 <FaConciergeBell /> Capella.
-               </h1>
-            </div>
-          </Card>
-
-          {/* Right Banner (Image + Gelap Linear dari atas) */}
-          <Card className="lg:col-span-5 relative overflow-hidden text-white min-h-[250px] flex flex-col justify-between !bg-transparent !p-0">
-            {/* 1. Gambar Hotel - MENGGUNAKAN INLINE STYLE */}
-            <div 
-                className="absolute inset-0 bg-cover bg-center z-0"
-                style={{ backgroundImage: "url('https://capellahotels.com/assets/img/site_images/hanoi/Capella-Hanoi-Opera-Suit-Gallery-01.jpg')" }}
-            ></div>
-            
-            {/* 2. Overlay Gradasi Gelap */}
-            <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-black/40 to-transparent z-10"></div>
-            
-            {/* 3. Konten */}
-            <div className="relative z-20 p-[18px] flex flex-col h-full justify-between">
-              <div>
-                <h2 className="text-2xl font-bold mb-2 text-white">Luxury at its finest</h2>
-                <p className="text-sm text-gray-100">
-                  Hospitality is an art. Deliver an unforgettable stay for guests while maximizing room occupancy and revenue.
-                </p>
-              </div>
-              <button className="mt-6 flex items-center gap-2 text-sm font-bold text-white hover:text-gray-300 transition-colors w-fit py-1">
-                Read more <FaArrowRight />
-              </button>
-            </div>
-          </Card>
-        </div>
 
         {/* ROW 3: Charts */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">

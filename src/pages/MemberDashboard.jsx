@@ -47,9 +47,6 @@ const TIERS = [
 function getTier(points) {
   return TIERS.find(t => points >= t.min && points <= t.max) || TIERS[0];
 }
-function calcPoints(bookings) {
-  return bookings.filter(b => b.status === "Checked-Out").reduce((sum, b) => sum + (b.price * 10), 0);
-}
 
 // Helper untuk format YYYY-MM-DD
 const getTodayString = () => new Date().toISOString().split('T')[0];
@@ -65,8 +62,8 @@ export default function MemberDashboard() {
   const [user, setUser] = useState(null);
   const [alert, setAlert] = useState(null);
   
-  // State Modal & Filter Booking
   const [isBookingOpen, setIsBookingOpen] = useState(false);
+  const [selectedDetail, setSelectedDetail] = useState(null);
   const [bookingFilter, setBookingFilter] = useState({
     checkIn: getTodayString(),
     checkOut: getTomorrowString(),
@@ -84,22 +81,37 @@ export default function MemberDashboard() {
   const nights = calculateNights();
 
   const [bookingsList, setBookingsList] = useState([]);
+  const [pointsLedger, setPointsLedger] = useState([]);
+  const [pointsBalance, setPointsBalance] = useState(0);
+  const [cumulativePoints, setCumulativePoints] = useState(0);
   const [isFetching, setIsFetching] = useState(false);
 
   const API_URL = "https://pnpdzlpxlathfnfzgdol.supabase.co/rest/v1/bookings";
+  const API_URL_POINTS = "https://pnpdzlpxlathfnfzgdol.supabase.co/rest/v1/points_ledger";
   const API_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBucGR6bHB4bGF0aGZuZnpnZG9sIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODEzMzg3MTAsImV4cCI6MjA5NjkxNDcxMH0.wQ6qy7pi1oPUcp0t-oCNyfUPirlZHew-gnfXdt7yc90";
 
-  const fetchBookings = async (userId) => {
+  const fetchData = async (userId) => {
     try {
       setIsFetching(true);
       const { default: axios } = await import("axios");
-      const { data } = await axios.get(
-        `${API_URL}?user_id=eq.${userId}&order=created_at.desc`,
-        { headers: { apikey: API_KEY, Authorization: `Bearer ${API_KEY}` } }
-      );
-      setBookingsList(data);
+      const headers = { apikey: API_KEY, Authorization: `Bearer ${API_KEY}` };
+      
+      const [bookingsRes, pointsRes] = await Promise.all([
+        axios.get(`${API_URL}?user_id=eq.${userId}&order=created_at.desc`, { headers }),
+        axios.get(`${API_URL_POINTS}?user_id=eq.${userId}`, { headers })
+      ]);
+      
+      setBookingsList(bookingsRes.data);
+      setPointsLedger(pointsRes.data);
+      
+      const pts = pointsRes.data;
+      const balance = pts.reduce((sum, r) => sum + r.amount, 0);
+      const cumulative = pts.filter(r => r.type === 'earn_booking').reduce((sum, r) => sum + r.amount, 0);
+      
+      setPointsBalance(balance);
+      setCumulativePoints(cumulative);
     } catch (error) {
-      console.error("Gagal mengambil data booking:", error);
+      console.error("Gagal mengambil data:", error);
     } finally {
       setIsFetching(false);
     }
@@ -111,7 +123,7 @@ export default function MemberDashboard() {
     
     const parsedUser = JSON.parse(session);
     setUser(parsedUser);
-    fetchBookings(parsedUser.id);
+    fetchData(parsedUser.id);
   }, [navigate]);
 
   useEffect(() => {
@@ -139,7 +151,7 @@ export default function MemberDashboard() {
         checkIn: bookingFilter.checkIn,
         checkOut: bookingFilter.checkOut,
         price: totalPrice,
-        status: "Confirmed"
+        status: "Pending"
       };
 
       await axios.post(API_URL, payload, {
@@ -154,7 +166,7 @@ export default function MemberDashboard() {
       setIsBookingOpen(false);
       showAlert("success", `Reservasi ${room.type} untuk ${nights} malam berhasil dibuat!`);
       
-      fetchBookings(user.id);
+      fetchData(user.id);
       
     } catch (error) {
       console.error(error);
@@ -164,24 +176,36 @@ export default function MemberDashboard() {
 
   if (!user) return null;
 
-  const points      = calcPoints(bookingsList);
-  const currentTier = getTier(points);
+  const currentTier = getTier(cumulativePoints);
   const nextTier    = TIERS[TIERS.indexOf(currentTier) + 1] || null;
-  const progress    = nextTier ? Math.round(((points - currentTier.min) / (nextTier.min - currentTier.min)) * 100) : 100;
-  const poinNeeded  = nextTier ? nextTier.min - points : 0;
+  const progress    = nextTier ? Math.round(((cumulativePoints - currentTier.min) / (nextTier.min - currentTier.min)) * 100) : 100;
+  const poinNeeded  = nextTier ? nextTier.min - cumulativePoints : 0;
 
-  const total       = bookingsList.filter(b => b.status === "Checked-Out").reduce((s, b) => s + b.price, 0);
-  const upcoming    = bookingsList.filter(b => b.status === "Confirmed");
-  const totalStay   = bookingsList.filter(b => b.status === "Checked-Out").length;
+  const upcoming    = bookingsList.filter(b => b.status === "Confirmed" || b.status === "Pending");
+  const calculateTotalNights = (bookings) => {
+    return bookings.reduce((sum, b) => {
+      const start = new Date(b.checkIn);
+      const end = new Date(b.checkOut);
+      const diffDays = Math.ceil(Math.abs(end - start) / (1000 * 60 * 60 * 24));
+      return sum + (diffDays > 0 ? diffDays : 1);
+    }, 0);
+  };
+  const totalStay   = calculateTotalNights(bookingsList.filter(b => b.status === "Checked-Out"));
 
   const statusStyles = {
     "Checked-Out": "text-[#48BB78] bg-[#48BB78]/10 border border-[#48BB78]/20",
     "Confirmed":   "text-[#3BCBBE] bg-[#3BCBBE]/10 border border-[#3BCBBE]/20",
     "Cancelled":   "text-[#E53E3E] bg-[#E53E3E]/10 border border-[#E53E3E]/20",
+    "Pending":     "text-[#F5A623] bg-[#F5A623]/10 border border-[#F5A623]/20",
   };
 
   return (
-    <div className="relative min-h-screen pb-20 bg-[#F8F9FA]">
+    <motion.div 
+      initial={{ opacity: 0 }} 
+      animate={{ opacity: 1 }} 
+      transition={{ duration: 0.5 }} 
+      className="relative min-h-screen pb-20 bg-[#F8F9FA]"
+    >
       
       {/* Alert global */}
       <AnimatePresence>
@@ -259,7 +283,7 @@ export default function MemberDashboard() {
               <div className="absolute top-0 right-0 w-24 h-24 bg-white/5 rounded-bl-full" />
               <p className="text-white/60 text-[10px] font-bold uppercase tracking-[0.2em] mb-1">Total Saldo Poin</p>
               <p className="text-5xl font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-white to-gray-400">
-                {points.toLocaleString("id-ID")}
+                {pointsBalance.toLocaleString("id-ID")}
               </p>
               
               <button 
@@ -288,7 +312,7 @@ export default function MemberDashboard() {
               
               <div className="flex-shrink-0 relative">
                 <img src="https://images.unsplash.com/photo-1578683010236-d716f9a3f461?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Room" className="w-48 h-32 object-cover rounded-2xl shadow-md" />
-                <div className="absolute -top-3 -right-3 bg-[#3BCBBE] text-white text-[10px] font-bold uppercase px-3 py-1 rounded-full shadow-lg border-2 border-white">Mendatang</div>
+                <div className="absolute -top-3 -right-3 bg-[#3BCBBE] text-white text-[10px] font-bold uppercase px-3 py-1 rounded-full shadow-lg border-2 border-white">Upcoming</div>
               </div>
               
               <div className="flex-1 w-full">
@@ -310,7 +334,7 @@ export default function MemberDashboard() {
               <div className="w-full md:w-auto text-center md:text-right border-t md:border-t-0 md:border-l border-gray-100 pt-6 md:pt-0 md:pl-8">
                 <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">Total Biaya</p>
                 <p className="text-3xl font-black text-gray-900 mb-4">${upcoming[0].price}</p>
-                <button className="w-full md:w-auto px-6 py-2.5 rounded-full border border-gray-200 text-sm font-bold text-gray-700 hover:bg-gray-50 transition-colors">
+                <button onClick={() => setSelectedDetail(upcoming[0])} className="w-full md:w-auto px-6 py-2.5 rounded-full border border-gray-200 text-sm font-bold text-gray-700 hover:bg-gray-50 transition-colors">
                   Lihat Detail
                 </button>
               </div>
@@ -334,7 +358,7 @@ export default function MemberDashboard() {
         {/* ========================================================================= */}
         {/* 3. SECTION: METRIK & RIWAYAT */}
         {/* ========================================================================= */}
-        <div className="pt-4 grid grid-cols-1 lg:grid-cols-12 gap-8">
+        <div id="riwayat" className="pt-4 grid grid-cols-1 lg:grid-cols-12 gap-8">
           
           <div className="lg:col-span-8 space-y-6">
             <h2 className="text-2xl font-bold text-gray-900 font-serif">Riwayat <span className="italic font-light text-gray-500">Reservasi</span></h2>
@@ -391,15 +415,6 @@ export default function MemberDashboard() {
                 </div>
                 <div className="w-12 h-12 bg-gray-50 rounded-full flex items-center justify-center text-gray-400 group-hover:scale-110 transition-transform"><BedDouble size={20} /></div>
               </div>
-              
-              <div className="bg-[#0a0f1e] p-6 rounded-[24px] shadow-md border border-gray-800 flex items-center justify-between text-white relative overflow-hidden group">
-                <div className="absolute top-0 right-0 w-20 h-20 bg-[#3BCBBE]/20 rounded-bl-full blur-md" />
-                <div className="relative z-10">
-                  <p className="text-[10px] font-bold text-white/50 uppercase tracking-widest mb-1">Total Investasi</p>
-                  <p className="text-3xl font-black">${total.toLocaleString()}</p>
-                </div>
-                <div className="w-12 h-12 bg-[#3BCBBE]/20 rounded-full flex items-center justify-center text-[#3BCBBE] relative z-10 group-hover:scale-110 transition-transform"><Gem size={20} /></div>
-              </div>
             </div>
           </div>
         </div>
@@ -408,8 +423,11 @@ export default function MemberDashboard() {
         {/* 4. SECTION: CAPELLA REWARDS */}
         {/* ========================================================================= */}
         <div className="pt-8 border-t border-gray-200/60 mt-8">
-          <div className="flex items-center justify-between mb-8">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-8 gap-4">
             <h2 className="text-2xl font-bold text-gray-900 font-serif">Capella <span className="italic font-light text-gray-500">Rewards</span></h2>
+            <Link to="/rewards" className="bg-gray-100 hover:bg-[#3BCBBE] hover:text-white text-gray-700 px-5 py-2.5 rounded-full text-xs font-bold uppercase tracking-widest transition-colors flex items-center gap-2">
+              Katalog Hadiah <ArrowRight size={14} />
+            </Link>
           </div>
 
           <div className="grid lg:grid-cols-12 gap-8">
@@ -430,7 +448,7 @@ export default function MemberDashboard() {
                 {nextTier ? (
                   <div className="space-y-4">
                     <div className="flex justify-between text-xs font-bold text-white/50 tracking-wider uppercase">
-                      <span>{points.toLocaleString()} Pts</span>
+                      <span>{cumulativePoints.toLocaleString()} Pts</span>
                       <span>{nextTier.min.toLocaleString()} Pts</span>
                     </div>
                     <div className="w-full bg-white/10 rounded-full h-1.5 overflow-hidden border border-white/5">
@@ -513,56 +531,58 @@ export default function MemberDashboard() {
               className="relative bg-[#F8F9FA] w-full max-w-5xl rounded-[32px] shadow-2xl overflow-hidden z-10 flex flex-col max-h-[90vh]"
             >
               {/* Header Modal & Global Filter Tanggal */}
-              <div className="p-6 md:px-8 border-b border-gray-200 bg-white sticky top-0 z-20 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-6">
+              <div className="p-6 md:px-8 border-b border-gray-200 bg-white sticky top-0 z-20 shadow-sm flex items-center justify-between gap-6">
                 <div>
                   <h3 className="text-2xl font-bold font-serif text-gray-900">Pilih Akomodasi</h3>
                   <p className="text-xs text-gray-500 mt-1 font-light">Tentukan tanggal untuk melihat harga total.</p>
                 </div>
                 
-                {/* Form Filter Tanggal & Tamu */}
-                <div className="flex flex-wrap md:flex-nowrap items-center gap-3">
-                  <div className="flex flex-col">
-                    <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Check-in</label>
-                    <input 
-                      type="date" 
-                      min={getTodayString()}
-                      value={bookingFilter.checkIn}
-                      onChange={(e) => setBookingFilter({...bookingFilter, checkIn: e.target.value})}
-                      className="text-sm bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 outline-none focus:border-[#3BCBBE] text-gray-700"
-                    />
-                  </div>
-                  <div className="flex flex-col">
-                    <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Check-out</label>
-                    <input 
-                      type="date" 
-                      min={bookingFilter.checkIn}
-                      value={bookingFilter.checkOut}
-                      onChange={(e) => setBookingFilter({...bookingFilter, checkOut: e.target.value})}
-                      className="text-sm bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 outline-none focus:border-[#3BCBBE] text-gray-700"
-                    />
-                  </div>
-                  <div className="flex flex-col">
-                    <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Tamu</label>
-                    <input 
-                      type="number" 
-                      min="1"
-                      value={bookingFilter.guests}
-                      onChange={(e) => setBookingFilter({...bookingFilter, guests: e.target.value})}
-                      className="w-16 text-sm bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 outline-none focus:border-[#3BCBBE] text-gray-700"
-                    />
-                  </div>
-                </div>
-
                 <button
                   onClick={() => setIsBookingOpen(false)}
-                  className="absolute top-6 right-6 w-8 h-8 bg-gray-100 hover:bg-gray-200 rounded-full flex items-center justify-center text-gray-600 transition-colors"
+                  className="w-8 h-8 bg-gray-100 hover:bg-gray-200 rounded-full flex items-center justify-center text-gray-600 transition-colors"
                 >
                   <X size={16} />
                 </button>
               </div>
 
               {/* Body Modal (Katalog Kamar) */}
-              <div className="p-6 md:p-8 overflow-y-auto space-y-6">
+              <div className="p-6 md:p-8 overflow-y-auto">
+                
+                {/* Form Filter Tanggal & Tamu */}
+                <div className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm flex flex-wrap md:flex-nowrap items-center gap-4 mb-8">
+                  <div className="flex flex-col flex-1">
+                    <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1.5">Check-in</label>
+                    <input 
+                      type="date" 
+                      min={getTodayString()}
+                      value={bookingFilter.checkIn}
+                      onChange={(e) => setBookingFilter({...bookingFilter, checkIn: e.target.value})}
+                      className="text-sm bg-gray-50 border border-gray-200 rounded-lg px-4 py-2.5 outline-none focus:border-[#3BCBBE] focus:ring-2 focus:ring-[#3BCBBE]/20 text-gray-700 transition-all w-full"
+                    />
+                  </div>
+                  <div className="flex flex-col flex-1">
+                    <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1.5">Check-out</label>
+                    <input 
+                      type="date" 
+                      min={bookingFilter.checkIn}
+                      value={bookingFilter.checkOut}
+                      onChange={(e) => setBookingFilter({...bookingFilter, checkOut: e.target.value})}
+                      className="text-sm bg-gray-50 border border-gray-200 rounded-lg px-4 py-2.5 outline-none focus:border-[#3BCBBE] focus:ring-2 focus:ring-[#3BCBBE]/20 text-gray-700 transition-all w-full"
+                    />
+                  </div>
+                  <div className="flex flex-col flex-none w-24">
+                    <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1.5">Tamu</label>
+                    <input 
+                      type="number" 
+                      min="1"
+                      value={bookingFilter.guests}
+                      onChange={(e) => setBookingFilter({...bookingFilter, guests: e.target.value})}
+                      className="w-full text-sm bg-gray-50 border border-gray-200 rounded-lg px-4 py-2.5 outline-none focus:border-[#3BCBBE] focus:ring-2 focus:ring-[#3BCBBE]/20 text-gray-700 transition-all"
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-6">
                 {roomsData.map((room) => {
                   const basePrice = parseInt(room.price.replace(/[^0-9]/g, ''), 10);
                   const totalRoomPrice = basePrice * nights;
@@ -609,12 +629,67 @@ export default function MemberDashboard() {
                     </div>
                   );
                 })}
+                </div>
               </div>
             </motion.div>
           </div>
         )}
       </AnimatePresence>
 
-    </div>
+      <AnimatePresence>
+        {selectedDetail && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+              onClick={() => setSelectedDetail(null)}
+            />
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              className="relative bg-white w-full max-w-md rounded-[24px] shadow-2xl overflow-hidden z-10"
+            >
+              <div className="p-6 border-b border-gray-100 flex justify-between items-center">
+                <h3 className="text-lg font-bold font-serif">Detail Reservasi</h3>
+                <button onClick={() => setSelectedDetail(null)} className="text-gray-400 hover:text-gray-600"><X size={20}/></button>
+              </div>
+              <div className="p-6 space-y-4">
+                <div>
+                  <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest mb-1">ID Reservasi</p>
+                  <p className="font-medium text-gray-900">{selectedDetail.id}</p>
+                </div>
+                <div>
+                  <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest mb-1">Akomodasi</p>
+                  <p className="font-medium text-gray-900">{selectedDetail.roomType}</p>
+                </div>
+                <div className="flex gap-8">
+                  <div>
+                    <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest mb-1">Check-in</p>
+                    <p className="font-medium text-gray-900">{selectedDetail.checkIn}</p>
+                  </div>
+                  <div>
+                    <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest mb-1">Check-out</p>
+                    <p className="font-medium text-gray-900">{selectedDetail.checkOut}</p>
+                  </div>
+                </div>
+                <div>
+                  <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest mb-1">Total Biaya</p>
+                  <p className="font-black text-2xl text-gray-900">${selectedDetail.price}</p>
+                </div>
+                <div className="pt-2">
+                  <span className={`inline-flex px-3 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${statusStyles[selectedDetail.status] || statusStyles["Confirmed"]}`}>
+                    Status: {selectedDetail.status}
+                  </span>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+    </motion.div>
   );
 }

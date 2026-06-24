@@ -124,7 +124,6 @@ export default function Header({ title = "Dashboard", breadcrumb = ["Pages", "Da
               <DropdownMenuLabel>My Account</DropdownMenuLabel>
             )}
 
-            <DropdownMenuSeparator />
             {/* Fungsi Logout dipanggil di sini */}
             <DropdownMenuItem onClick={handleLogout} className="cursor-pointer text-red-500 focus:text-red-500">
               Log out
@@ -132,24 +131,23 @@ export default function Header({ title = "Dashboard", breadcrumb = ["Pages", "Da
           </DropdownMenuContent>
         </DropdownMenu>
 
-        <button className="transition-colors hover:text-[#3BCBBE]" style={{ color: COLORS.textGray }}>
-          <FaCog className="text-lg" />
-        </button>
-
-        {/* SHADCN KOMPONEN 3: TOOLTIP (Notifikasi) */}
-        <TooltipProvider delayDuration={200}>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <button className="transition-colors hover:text-[#3BCBBE] relative" style={{ color: COLORS.textGray }}>
-                <FaBell className="text-lg" />
-                <span className="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full border border-white"></span>
-              </button>
-            </TooltipTrigger>
-            <TooltipContent className="bg-gray-800 text-white font-['Helvetica'] rounded-lg text-xs">
-              <p>3 New Notifications</p>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <button className="transition-colors hover:text-[#3BCBBE] relative outline-none" style={{ color: COLORS.textGray }}>
+              <FaBell className="text-lg" />
+              <span className="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full border border-white"></span>
+            </button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-64 font-['Helvetica'] rounded-xl p-2">
+            <DropdownMenuLabel>Notifications</DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <div className="py-6 flex flex-col items-center justify-center text-center">
+              <FaBell className="text-gray-200 text-3xl mb-2" />
+              <p className="text-sm font-medium text-gray-500">All caught up!</p>
+              <p className="text-xs text-gray-400 mt-1">No new notifications right now.</p>
+            </div>
+          </DropdownMenuContent>
+        </DropdownMenu>
 
       </div>
     </header>

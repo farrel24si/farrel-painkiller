@@ -2,11 +2,14 @@ import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { Mail, Lock, Eye, EyeOff, ArrowLeft, Home } from "lucide-react";
 import { usersAPI } from "../../services/usersAPI";
+import { motion } from "framer-motion";
+import Alert from "../../components/Alert";
 
 export default function Login() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [toastMessage, setToastMessage] = useState("");
   const [showPassword, setShowPassword] = useState(false);
 
   const [formData, setFormData] = useState({ email: "", password: "" });
@@ -31,25 +34,37 @@ export default function Login() {
       if (users && users.length > 0) {
         const loggedInUser = users[0];
         localStorage.setItem("userSession", JSON.stringify(loggedInUser));
-        alert(`Selamat datang, ${loggedInUser.name}!`);
-
-        if (loggedInUser.role === "admin") {
-          navigate("/dashboard");
-        } else {
-          navigate("/member");
-        }
+        setToastMessage(`Selamat datang, ${loggedInUser.name}!`);
+        
+        setTimeout(() => {
+          if (loggedInUser.role === "admin") {
+            navigate("/dashboard");
+          } else {
+            navigate("/member");
+          }
+        }, 2000);
       } else {
         setError("Email atau Password salah!");
+        setLoading(false);
       }
     } catch (err) {
       setError("Terjadi kesalahan pada server. Silakan coba lagi.");
-    } finally {
       setLoading(false);
-    }
+    } 
   };
 
   return (
-    <div className="min-h-screen flex font-['Helvetica']">
+    <motion.div 
+      initial={{ opacity: 0 }} 
+      animate={{ opacity: 1 }} 
+      transition={{ duration: 0.5 }} 
+      className="min-h-screen flex font-['Helvetica']"
+    >
+      {toastMessage && (
+        <div className="fixed top-10 left-1/2 -translate-x-1/2 z-[100] w-[90%] max-w-sm">
+          <Alert type="success" message={toastMessage} />
+        </div>
+      )}
       {/* Left Panel – gambar + gradien + logo + teks */}
       <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden">
         <div
@@ -98,9 +113,7 @@ export default function Login() {
           </div>
 
           {error && (
-            <div className="bg-red-50 border-l-4 border-red-500 text-red-700 px-4 py-2 rounded-r-xl text-sm mb-4">
-              {error}
-            </div>
+            <Alert type="error" message={error} onClose={() => setError("")} />
           )}
 
           <form onSubmit={handleSubmit} className="space-y-4">
@@ -205,6 +218,6 @@ export default function Login() {
           </div>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 }

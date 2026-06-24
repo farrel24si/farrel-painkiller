@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { Mail, Lock, Eye, EyeOff, User, ArrowLeft } from "lucide-react";
 import { usersAPI } from "../../services/usersAPI";
+import { motion } from "framer-motion";
+import Alert from "../../components/Alert";
 
 export default function Register() {
   const navigate = useNavigate();
@@ -60,7 +62,12 @@ export default function Register() {
   };
 
   return (
-    <div className="min-h-screen flex font-['Helvetica'] bg-gradient-to-br from-[#F8F9FA] to-[#E2E8F0]">
+    <motion.div 
+      initial={{ opacity: 0 }} 
+      animate={{ opacity: 1 }} 
+      transition={{ duration: 0.5 }} 
+      className="min-h-screen flex font-['Helvetica'] bg-gradient-to-br from-[#F8F9FA] to-[#E2E8F0]"
+    >
       {/* Left Panel – gambar + gradien + logo + teks */}
       <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden">
         <div
@@ -109,14 +116,10 @@ export default function Register() {
           </div>
 
           {error && (
-            <div className="bg-red-50 border-l-4 border-red-500 text-red-700 px-4 py-2 rounded-r-xl text-sm mb-4">
-              {error}
-            </div>
+            <Alert type="error" message={error} onClose={() => setError("")} />
           )}
           {success && (
-            <div className="bg-green-50 border-l-4 border-green-500 text-green-700 px-4 py-2 rounded-r-xl text-sm mb-4">
-              {success}
-            </div>
+            <Alert type="success" message={success} onClose={() => setSuccess("")} />
           )}
 
           <form onSubmit={handleSubmit} className="space-y-4">
@@ -251,6 +254,6 @@ export default function Register() {
           </div>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 }

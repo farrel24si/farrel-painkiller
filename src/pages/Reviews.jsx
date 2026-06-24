@@ -55,11 +55,11 @@ export default function Reviews() {
 
   return (
     <div className="flex-1 overflow-y-auto bg-[#F8F9FA] font-['Helvetica'] min-h-screen">
-      <div className="p-6">
-        <div className="mb-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+      <div className="p-6 md:p-8 max-w-7xl mx-auto">
+        <div className="mb-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
           <div>
-            <h2 className="text-xl font-bold text-gray-800">Customer Feedback</h2>
-            <p className="text-sm text-gray-500">Kelola ulasan tamu Capella secara real-time.</p>
+            <h2 className="text-2xl font-bold font-serif text-gray-900">Guest <span className="italic font-light text-gray-500">Reviews</span></h2>
+            <p className="text-sm text-gray-500 font-light mt-1">Kelola ulasan tamu Capella secara real-time.</p>
           </div>
           
           <div className="flex items-center gap-3 w-full md:w-auto">
@@ -99,44 +99,62 @@ export default function Reviews() {
           </div>
         </div>
 
-        <Card className="mb-6">
-          <div className="flex justify-between items-end mb-2">
-            <div>
-              <h3 className="font-bold text-gray-800">Customer Satisfaction Score</h3>
-              <p className="text-xs text-gray-400">Target bulan ini: 90%</p>
-            </div>
-            <h2 className="text-2xl font-bold text-[#3BCBBE]">85%</h2>
+        <div className="bg-white p-6 rounded-[24px] shadow-sm border border-gray-100 mb-8 flex justify-between items-center group">
+          <div>
+            <h3 className="font-bold text-gray-400 uppercase tracking-widest text-[10px] mb-1">Customer Satisfaction</h3>
+            <p className="text-xs text-gray-400">Target bulan ini: 90%</p>
           </div>
-          <Progress value={85} className="h-2 bg-gray-100" />
-        </Card>
+          <div className="text-right flex items-center gap-4">
+            <div className="w-32 hidden md:block">
+               <Progress value={85} className="h-2 bg-gray-50 [&>div]:bg-[#3BCBBE]" />
+            </div>
+            <h2 className="text-3xl font-black text-[#3BCBBE]">85%</h2>
+          </div>
+        </div>
 
-        <div className="grid gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredReviews.length > 0 ? (
             filteredReviews.map((review) => (
-              <Card key={review.id} className="flex flex-col md:flex-row gap-4 items-start md:items-center">
-                <div className="flex-shrink-0"><Avatar name={review.name} /></div>
-                <div className="flex-1">
-                  <div className="flex items-center gap-2 mb-1">
-                    <h3 className="font-bold text-gray-800">{review.name}</h3>
-                    <span className="text-xs text-gray-400 font-bold">• {review.room}</span>
+              <div key={review.id} className="bg-white rounded-[24px] p-6 shadow-sm border border-gray-100 hover:shadow-lg transition-all flex flex-col h-full relative group">
+                <div className="flex justify-between items-start mb-5">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#3BCBBE] to-[#F5A623] flex items-center justify-center text-white font-bold shadow-sm text-sm">
+                      {review.name.charAt(0).toUpperCase()}
+                    </div>
+                    <div>
+                      <h3 className="font-bold text-gray-900 text-sm">{review.name}</h3>
+                      <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest mt-0.5">{review.room}</p>
+                    </div>
                   </div>
-                  <div className="flex text-yellow-400 text-sm mb-2">
-                    {[...Array(5)].map((_, i) => (
-                      <FaStar key={i} className={i < review.rating ? "text-yellow-400" : "text-gray-200"} />
-                    ))}
-                  </div>
-                  <p className="text-sm text-gray-600 font-medium">"{review.text}"</p>
-                </div>
-                <div className="flex-shrink-0 mt-4 md:mt-0">
-                  <Badge type={review.status === "Positive" ? "success" : review.status === "Neutral" ? "warning" : "danger"}>
+                  <span className={`px-2 py-1 rounded-md text-[9px] uppercase font-bold tracking-wider ${
+                    review.status === "Positive" ? "bg-[#48BB78]/10 text-[#48BB78]" : 
+                    review.status === "Neutral" ? "bg-yellow-500/10 text-yellow-600" : "bg-[#E53E3E]/10 text-[#E53E3E]"
+                  }`}>
                     {review.status}
-                  </Badge>
+                  </span>
                 </div>
-              </Card>
+                
+                <div className="flex text-[#F5A623] text-sm mb-3">
+                  {[...Array(5)].map((_, i) => (
+                    <FaStar key={i} className={i < review.rating ? "text-[#F5A623]" : "text-gray-100"} />
+                  ))}
+                </div>
+                
+                <p className="text-sm text-gray-600 font-medium italic leading-relaxed">"{review.text}"</p>
+                
+                <div className="mt-auto pt-6">
+                  <button className="text-[10px] font-bold text-[#3BCBBE] uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1.5 hover:text-[#2ca89d]">
+                    <FaCheck size={10} /> Mark as Reviewed
+                  </button>
+                </div>
+              </div>
             ))
           ) : (
-            <div className="text-center py-10 bg-white rounded-xl border border-gray-100 shadow-sm">
-              <p className="text-gray-500 font-bold">Ulasan tidak ditemukan.</p>
+            <div className="col-span-full text-center py-16 bg-white rounded-[24px] border border-gray-100 shadow-sm">
+              <div className="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-4 text-gray-300">
+                <FaSearch size={24} />
+              </div>
+              <p className="text-gray-900 font-bold text-lg">Ulasan tidak ditemukan.</p>
               <p className="text-sm text-gray-400 mt-1">Coba ganti kata kunci atau ubah filter dropdown.</p>
             </div>
           )}

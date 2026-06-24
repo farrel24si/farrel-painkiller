@@ -73,18 +73,6 @@ export default function Sidebar() {
             )}
           </NavLink>
         </li>
-        <li>
-          <NavLink to="/guests" className={menuClass}>
-            {({ isActive }) => (
-              <>
-                <div className={iconBoxClass(isActive)}>
-                  <FaUsers className="text-lg" />
-                </div>
-                Guests
-              </>
-            )}
-          </NavLink>
-        </li>
 
         <li>
           <NavLink to="/inventory" className={menuClass}>

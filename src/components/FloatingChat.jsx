@@ -15,6 +15,7 @@ export default function FloatingChat() {
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef(null);
+  const chatRef = useRef(null);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -23,6 +24,24 @@ export default function FloatingChat() {
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
+
+  useEffect(() => {
+    const handleOpenChat = () => setIsOpen(true);
+    window.addEventListener("open-sahaja-ai", handleOpenChat);
+    return () => window.removeEventListener("open-sahaja-ai", handleOpenChat);
+  }, []);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (chatRef.current && !chatRef.current.contains(event.target)) {
+        setIsOpen(false);
+      }
+    };
+    if (isOpen) {
+      setTimeout(() => window.addEventListener("mousedown", handleClickOutside), 10);
+    }
+    return () => window.removeEventListener("mousedown", handleClickOutside);
+  }, [isOpen]);
 
   const handleSend = async (e) => {
     e.preventDefault();
@@ -75,7 +94,7 @@ export default function FloatingChat() {
     <div className="relative z-50 font-sans">
       {/* Chat Window */}
       {isOpen && (
-        <div className="absolute bottom-20 right-0 bg-white/95 backdrop-blur-xl border border-gray-100 shadow-2xl rounded-3xl w-[350px] h-[500px] flex flex-col overflow-hidden mb-4 transition-all duration-300 transform origin-bottom-right">
+        <div ref={chatRef} className="absolute bottom-20 right-0 bg-white/95 backdrop-blur-xl border border-gray-100 shadow-2xl rounded-3xl w-[350px] h-[500px] flex flex-col overflow-hidden mb-4 transition-all duration-300 transform origin-bottom-right">
           
           {/* Header */}
           <div className="bg-gradient-to-r from-[#313860] to-[#3BCBBE] p-4 flex justify-between items-center text-white rounded-t-3xl">

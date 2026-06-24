@@ -64,15 +64,15 @@ export default function Inventori() {
           </div>
         )}
 
-        <div className="bg-white p-6 rounded-[15px] shadow-sm">
-          <div className="mb-6 flex flex-col xl:flex-row justify-between items-start xl:items-center gap-4">
+        <div className="bg-white p-6 md:p-8 rounded-[24px] shadow-sm border border-gray-100">
+          <div className="mb-8 flex flex-col xl:flex-row justify-between items-start xl:items-center gap-4">
             <div>
-              <h3 className="text-lg font-bold">Inventory List</h3>
-              <p className="text-sm text-gray-400">Manage your CRM-linked items</p>
+              <h3 className="text-2xl font-bold font-serif text-gray-900">Inventory <span className="italic font-light text-gray-500">List</span></h3>
+              <p className="text-sm text-gray-500 font-light mt-1">Manage your CRM-linked items</p>
             </div>
-            <div className="flex flex-col md:flex-row gap-3 w-full xl:w-auto">
-              <input type="text" placeholder="Search items..." className="border p-2 rounded-[12px] text-sm w-full md:w-auto" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
-              <select className="border p-2 rounded-[12px] text-sm w-full md:w-auto" value={selectedCategory} onChange={(e) => setSelectedCategory(e.target.value)}>
+            <div className="flex flex-col md:flex-row gap-3 w-full xl:w-auto items-center">
+              <input type="text" placeholder="Search items..." className="bg-gray-50 border border-gray-200 px-4 py-2 rounded-full text-sm outline-none focus:border-[#3BCBBE] focus:ring-2 focus:ring-[#3BCBBE]/20 transition-all w-full md:w-auto" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
+              <select className="bg-gray-50 border border-gray-200 px-4 py-2 rounded-full text-sm outline-none focus:border-[#3BCBBE] focus:ring-2 focus:ring-[#3BCBBE]/20 transition-all w-full md:w-auto cursor-pointer" value={selectedCategory} onChange={(e) => setSelectedCategory(e.target.value)}>
                 {categories.map(cat => <option key={cat} value={cat}>{cat}</option>)}
               </select>
               {/* Tombol dipindah ke sini */}
@@ -81,20 +81,37 @@ export default function Inventori() {
               </Button>
             </div>
           </div>
-          <Table headers={tableHeaders}>
-            {filteredInventory.map(item => (
-              <tr key={item.id} className="border-b border-gray-50 hover:bg-gray-50/50">
-                <td className="py-4 flex items-center gap-4"><img src={item.imageUrl} alt={item.name} className="w-12 h-12 rounded-lg object-cover" /><div><p className="font-bold">{item.name}</p><p className="text-xs text-[#3BCBBE]">{item.id}</p></div></td>
-                <td className="py-4"><p>{item.category}</p><p className="text-xs text-gray-400">{item.type} • {item.targetGuest}</p></td>
-                <td className="py-4"><div className="flex flex-col"><span>{item.available}/{item.totalStock}</span><div className="w-16 bg-gray-200 h-1.5 rounded"><div className={`h-1.5 rounded ${item.available < 10 ? 'bg-[#E53E3E]' : 'bg-[#3BCBBE]'}`} style={{width: `${(item.available / item.totalStock) * 100}%`}}></div></div></div></td>
-                <td className="py-4"><span className={`px-3 py-1.5 rounded-[8px] text-[11px] uppercase font-bold ${
-                  item.status === 'In Stock' ? 'text-[#48BB78] bg-[#48BB78]/10' :
-                  item.status === 'Low Stock' ? 'text-yellow-500 bg-yellow-500/10' : 'text-[#E53E3E] bg-[#E53E3E]/10'
-                }`}>{item.status}</span></td>
-                <td className="py-4"><Link to={`/inventory/${item.id}`} className="border border-[#3BCBBE] text-[#3BCBBE] px-4 py-1.5 rounded-[8px] text-xs hover:bg-[#3BCBBE] hover:text-white">Detail</Link></td>
-              </tr>
-            ))}
-          </Table>
+          
+          <div className="overflow-x-auto rounded-2xl border border-gray-100">
+            <table className="w-full text-left border-collapse min-w-[800px]">
+              <thead className="bg-gray-50/50">
+                <tr>
+                  {tableHeaders.map((header, index) => (
+                    <th key={index} className="py-4 px-6 text-[10px] font-bold text-gray-400 uppercase tracking-widest border-b border-gray-100">{header}</th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {filteredInventory.map(item => (
+                  <tr key={item.id} className="border-b border-gray-50 hover:bg-gray-50/80 transition-colors group">
+                    <td className="py-4 px-6 flex items-center gap-4"><img src={item.imageUrl} alt={item.name} className="w-12 h-12 rounded-lg object-cover shadow-sm" /><div><p className="font-bold text-sm text-gray-900">{item.name}</p><p className="text-[10px] font-bold text-[#3BCBBE] uppercase tracking-widest">{item.id}</p></div></td>
+                    <td className="py-4 px-6"><p className="font-medium text-sm text-gray-900">{item.category}</p><p className="text-xs text-gray-400">{item.type} • {item.targetGuest}</p></td>
+                    <td className="py-4 px-6"><div className="flex flex-col"><span className="text-sm font-bold text-gray-700">{item.available}/{item.totalStock}</span><div className="w-20 bg-gray-100 h-1.5 rounded-full mt-1"><div className={`h-1.5 rounded-full ${item.available < 10 ? 'bg-[#E53E3E]' : 'bg-[#3BCBBE]'}`} style={{width: `${(item.available / item.totalStock) * 100}%`}}></div></div></div></td>
+                    <td className="py-4 px-6"><span className={`px-3 py-1.5 rounded-full text-[10px] uppercase font-bold tracking-widest ${
+                      item.status === 'In Stock' ? 'text-[#48BB78] bg-[#48BB78]/10' :
+                      item.status === 'Low Stock' ? 'text-yellow-600 bg-yellow-500/10' : 'text-[#E53E3E] bg-[#E53E3E]/10'
+                    }`}>{item.status}</span></td>
+                    <td className="py-4 px-6"><Link to={`/inventory/${item.id}`} className="bg-white border border-gray-200 text-gray-600 px-4 py-2 rounded-full text-[10px] font-bold uppercase tracking-widest hover:border-[#3BCBBE] hover:text-[#3BCBBE] transition-colors shadow-sm">Detail</Link></td>
+                  </tr>
+                ))}
+                {filteredInventory.length === 0 && (
+                  <tr>
+                     <td colSpan={5} className="py-12 text-center text-sm font-medium text-gray-400">No items found matching your filter.</td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
     </div>
