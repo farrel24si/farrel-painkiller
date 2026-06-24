@@ -252,7 +252,6 @@ export default function GuestLayout() {
         )}
 
 
-
         <FloatingChat />
       </div>
     </div>
