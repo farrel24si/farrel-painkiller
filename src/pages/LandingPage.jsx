@@ -185,6 +185,13 @@ const LandingPage = () => {
       text: "Pelayanan personal yang tak tertandingi. Saya selalu kembali ke sini setiap kali ke Jakarta.",
       response: "Bapak Budi, kehadiran Anda selalu kami tunggu. Sampai bertemu lagi!",
     },
+    {
+      name: "Siti Rahayu",
+      photo: "https://randomuser.me/api/portraits/women/68.jpg",
+      rating: 5,
+      text: "Presidential Suite-nya luar biasa! Fasilitas lengkap dan butler-nya sangat profesional.",
+      response: "Terima kasih, Siti! Kami selalu berusaha memberikan yang terbaik. 💚",
+    },
   ];
 
   const galleryImages = [
