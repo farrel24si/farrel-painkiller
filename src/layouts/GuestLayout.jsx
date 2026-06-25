@@ -251,6 +251,17 @@ export default function GuestLayout() {
           </button>
         )}
 
+        <a
+          href="https://wa.me/6221123456789"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="bg-[#25D366] text-white p-4 w-14 h-14 rounded-full flex items-center justify-center shadow-xl hover:shadow-[0_0_25px_rgba(37,211,102,0.6)] hover:scale-110 transition-all relative group"
+        >
+          <FaWhatsapp className="text-2xl" />
+          <span className="absolute right-full mr-3 top-1/2 -translate-y-1/2 bg-gray-800 text-white text-xs py-1 px-3 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
+            Chat WhatsApp
+          </span>
+        </a>
 
         <FloatingChat />
       </div>
