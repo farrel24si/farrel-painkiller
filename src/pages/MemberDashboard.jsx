@@ -6,6 +6,7 @@ import {
   CalendarDays, Crown, Medal, Trophy, ChevronRight,
   Compass, ArrowRight, CheckCircle, MapPin, X, Users
 } from "lucide-react";
+import { FaEdit } from "react-icons/fa";
 
 // ─── DATA KAMAR & TIER ────────────────────────────────────────────────────────
 const roomsData = [
@@ -245,13 +246,55 @@ export default function MemberDashboard() {
           <div className="relative z-10 flex flex-col lg:flex-row items-center lg:items-start gap-10 text-white">
             
             <div className="flex-1 flex flex-col sm:flex-row items-center sm:items-start text-center sm:text-left gap-6">
-              <div className="relative flex-shrink-0">
-                <div className="w-28 h-28 rounded-full border border-white/20 flex items-center justify-center text-4xl font-black bg-white/5 backdrop-blur-xl shadow-[0_0_30px_rgba(255,255,255,0.1)]">
-                  {user.name.charAt(0).toUpperCase()}
+              <div className="relative flex-shrink-0 flex flex-col items-center">
+                <div className="relative">
+                  <img 
+                    src={user.avatar_url || `https://api.dicebear.com/9.x/avataaars/svg?seed=${encodeURIComponent(user.name)}&backgroundColor=b6e3f4`}
+                    alt={user.name}
+                    className="w-28 h-28 rounded-full border-4 border-white/20 object-cover shadow-[0_0_30px_rgba(255,255,255,0.1)] bg-white/5 backdrop-blur-xl"
+                  />
+                  <div className="absolute bottom-0 right-0 bg-[#0a0f1e] rounded-full p-1.5 border border-white/10">
+                    <Crown size={16} className="text-[#F5A623]" />
+                  </div>
                 </div>
-                <div className="absolute bottom-0 right-0 bg-[#0a0f1e] rounded-full p-1.5 border border-white/10">
-                  <Crown size={16} className="text-[#F5A623]" />
-                </div>
+                
+                {/* Tombol Upload */}
+                <label className="mt-4 bg-white/20 hover:bg-white/30 border border-white/40 px-4 py-2 rounded-full text-xs font-bold cursor-pointer transition-colors flex items-center gap-2">
+                  <FaEdit size={14} />
+                  Ubah Foto Profil
+                  <input 
+                    type="file" 
+                    accept="image/*" 
+                    className="hidden" 
+                    onChange={async (e) => {
+                      const file = e.target.files[0];
+                      if (!file) return;
+                      if (file.size > 2 * 1024 * 1024) {
+                        showAlert("error", "Ukuran maksimal foto adalah 2MB.");
+                        return;
+                      }
+                      const reader = new FileReader();
+                      reader.onload = async (event) => {
+                        const base64 = event.target.result;
+                        try {
+                          showAlert("success", "Sedang mengunggah foto...");
+                          const { default: axios } = await import("axios");
+                          const API_URL = "https://pnpdzlpxlathfnfzgdol.supabase.co/rest/v1/users";
+                          const API_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBucGR6bHB4bGF0aGZuZnpnZG9sIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODEzMzg3MTAsImV4cCI6MjA5NjkxNDcxMH0.wQ6qy7pi1oPUcp0t-oCNyfUPirlZHew-gnfXdt7yc90";
+                          await axios.patch(`${API_URL}?id=eq.${user.id}`, { avatar_url: base64 }, { headers: { apikey: API_KEY, Authorization: `Bearer ${API_KEY}`, "Content-Type": "application/json", Prefer: "return=minimal" } });
+                          const updated = { ...user, avatar_url: base64 };
+                          localStorage.setItem("userSession", JSON.stringify(updated));
+                          setUser(updated);
+                          showAlert("success", "Foto profil berhasil diperbarui!");
+                        } catch (error) {
+                          console.error(error);
+                          showAlert("error", "Gagal memperbarui foto. Pastikan kolom avatar_url sudah ada.");
+                        }
+                      };
+                      reader.readAsDataURL(file);
+                    }} 
+                  />
+                </label>
               </div>
               
               <div className="flex flex-col justify-center">

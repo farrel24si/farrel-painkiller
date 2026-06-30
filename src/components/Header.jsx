@@ -96,11 +96,13 @@ export default function Header({ title = "Dashboard", breadcrumb = ["Pages", "Da
             <button className="flex items-center gap-2 font-bold text-sm transition-colors ml-2 hover:text-[#3BCBBE] outline-none" style={{ color: COLORS.textGray }}>
               {/* Jika user sudah login, tampilkan ikon dan inisial/nama. Jika belum, tampilkan Sign In */}
               {user ? (
-                <div className="flex items-center gap-2 bg-white px-3 py-1.5 rounded-full border border-gray-200 shadow-sm">
-                  <div className="w-6 h-6 rounded-full bg-[#3BCBBE] text-white flex items-center justify-center text-xs">
-                    {user.name.charAt(0).toUpperCase()}
-                  </div>
-                  <span className="text-gray-700">{user.name.split(" ")[0]}</span>
+                <div className="flex items-center gap-2 bg-white px-3 py-1.5 rounded-full border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+                  <img 
+                    src={user.avatar_url || `https://api.dicebear.com/9.x/avataaars/svg?seed=${encodeURIComponent(user.name)}&backgroundColor=b6e3f4`}
+                    alt={user.name}
+                    className="w-7 h-7 rounded-full object-cover border border-gray-100"
+                  />
+                  <span className="text-gray-700 font-medium text-xs">{user.name.split(" ")[0]}</span>
                 </div>
               ) : (
                 <>
@@ -118,6 +120,10 @@ export default function Header({ title = "Dashboard", breadcrumb = ["Pages", "Da
                   <span>{user.name}</span>
                   <span className="text-xs text-gray-400 font-normal">{user.email}</span>
                 </DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={() => navigate("/profile")} className="cursor-pointer text-gray-700">
+                  <FaUser className="mr-2" /> Profil Saya
+                </DropdownMenuItem>
                 <DropdownMenuSeparator />
               </>
             ) : (

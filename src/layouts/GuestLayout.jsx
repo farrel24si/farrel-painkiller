@@ -226,7 +226,7 @@ export default function GuestLayout() {
             <h4 className="font-semibold mb-4 text-white tracking-wider text-sm uppercase">Hubungi Kami</h4>
             <p className="text-gray-400 text-sm mb-3">Senin - Minggu, 24 Jam</p>
             <p className="text-gray-400 text-sm flex items-center gap-2 mb-3">
-              <FaPhoneAlt className="text-[#3BCBBE]" /> +62 21 1234 5678
+              <FaPhoneAlt className="text-[#3BCBBE]" /> +62 813 7800 6219
             </p>
             <p className="text-gray-400 text-sm flex items-center gap-2">
               <FaEnvelope className="text-[#3BCBBE]" /> cs@capellahotel.com

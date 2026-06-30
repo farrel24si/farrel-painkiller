@@ -10,6 +10,7 @@ export default function MemberLayout() {
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
   const menuRef = useRef(null);
 
   useEffect(() => {
@@ -33,8 +34,12 @@ export default function MemberLayout() {
   }, []);
 
   const handleLogout = () => {
-    localStorage.removeItem("userSession");
-    navigate("/");
+    setMenuOpen(false);
+    setIsLoggingOut(true);
+    setTimeout(() => {
+      localStorage.removeItem("userSession");
+      navigate("/login");
+    }, 800);
   };
 
   if (!user) return null;
@@ -72,8 +77,12 @@ export default function MemberLayout() {
               onClick={() => setMenuOpen((o) => !o)}
               className="flex items-center gap-3 pl-2 pr-3 py-1.5 rounded-full hover:bg-gray-100 transition-colors"
             >
-              <div className="relative w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold text-white bg-gradient-to-br from-[#3BCBBE] to-[#F5A623] shadow-sm">
-                {user.name.charAt(0).toUpperCase()}
+              <div className="relative w-9 h-9 rounded-full shadow-sm flex-shrink-0">
+                <img
+                  src={user.avatar_url || `https://api.dicebear.com/9.x/avataaars/svg?seed=${encodeURIComponent(user.name)}&backgroundColor=b6e3f4`}
+                  alt={user.name}
+                  className="w-full h-full rounded-full object-cover border border-gray-200"
+                />
                 <Crown
                   size={11}
                   className="absolute -bottom-1 -right-1 text-[#F5A623] bg-white rounded-full p-[2px] shadow-sm"
@@ -102,7 +111,7 @@ export default function MemberLayout() {
 
                   <nav className="py-1.5">
                     <Link
-                      to="/member"
+                      to="/profile"
                       onClick={() => setMenuOpen(false)}
                       className="flex items-center gap-3 px-5 py-2.5 text-sm font-semibold text-gray-600 hover:bg-[#3BCBBE]/5 hover:text-[#3BCBBE] transition-colors"
                     >
@@ -157,12 +166,37 @@ export default function MemberLayout() {
       </motion.main>
 
       {/* ── FOOTER ── */}
-      <footer className="border-t border-gray-100 py-6 mt-10">
+      <footer className="border-t border-gray-100 py-6 mt-10 relative z-10">
         <div className="max-w-7xl mx-auto px-6 md:px-8 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-gray-400">
           <p className="font-serif italic text-sm text-gray-500">Capella</p>
           <p>&copy; {new Date().getFullYear()} Capella Hotel &amp; Resort. All rights reserved.</p>
         </div>
       </footer>
+      
+      {/* ── LOGOUT ANIMATION OVERLAY ── */}
+      <AnimatePresence>
+        {isLoggingOut && (
+          <motion.div
+            initial={{ opacity: 0, backdropFilter: "blur(0px)" }}
+            animate={{ opacity: 1, backdropFilter: "blur(12px)" }}
+            transition={{ duration: 0.6 }}
+            className="fixed inset-0 z-[100] bg-white/40 flex items-center justify-center"
+          >
+            <motion.div
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ delay: 0.1, duration: 0.4 }}
+              className="bg-white px-8 py-6 rounded-[20px] shadow-2xl flex flex-col items-center border border-gray-100"
+            >
+              <div className="w-14 h-14 rounded-full bg-[#3BCBBE]/10 flex items-center justify-center mb-4">
+                <LogOut size={24} className="text-[#3BCBBE]" />
+              </div>
+              <h3 className="text-xl font-bold text-gray-800">Sampai Jumpa!</h3>
+              <p className="text-sm text-gray-500 mt-1 font-medium">Mengeluarkan Anda dengan aman...</p>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 } 

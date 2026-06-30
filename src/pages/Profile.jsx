@@ -64,34 +64,18 @@ export default function Profile() {
     ? Math.round(((points - currentTier.min) / (nextTier.min - currentTier.min)) * 100)
     : 100;
 
-  const tabs = [
+  const allTabs = [
     { id: "profile",   label: "Profil Saya",     icon: <FaUser /> },
     { id: "password",  label: "Ganti Password",  icon: <FaLock /> },
     { id: "bookings",  label: "Riwayat Booking", icon: <FaBed /> },
     { id: "rewards",   label: "Capella Rewards",  icon: <FaGem /> },
   ];
+  const tabs = user.role === "admin" ? allTabs.slice(0, 2) : allTabs;
 
   return (
     <div className="min-h-screen bg-[#F8F9FA] font-['Helvetica']">
 
-      {/* ── TOP NAV ── */}
-      <div className="bg-white border-b border-gray-100 px-6 py-4 flex items-center justify-between sticky top-0 z-40 shadow-sm">
-        <span className="text-xl font-bold text-[#3BCBBE]">Capella Hotel</span>
-        <div className="flex items-center gap-4">
-          <button
-            onClick={() => navigate("/dashboard")}
-            className="flex items-center gap-2 text-sm font-bold text-gray-500 hover:text-[#3BCBBE] transition-colors"
-          >
-            <MdSpaceDashboard /> Dashboard
-          </button>
-          <button
-            onClick={() => { localStorage.removeItem("userSession"); navigate("/login"); }}
-            className="flex items-center gap-2 text-sm font-bold text-red-400 hover:text-red-600 transition-colors"
-          >
-            <FaSignOutAlt /> Logout
-          </button>
-        </div>
-      </div>
+
 
       {/* ── GLOBAL ALERT ── */}
       {alert && (
@@ -117,9 +101,49 @@ export default function Profile() {
           <div className="absolute -bottom-16 -left-10 w-64 h-64 rounded-full bg-white/5" />
 
           <div className="relative z-10 flex flex-col md:flex-row items-center md:items-start gap-6">
-            {/* Avatar */}
-            <div className="w-20 h-20 rounded-full bg-white/20 border-4 border-white/40 flex items-center justify-center text-3xl font-black shadow-md flex-shrink-0">
-              {user.name.charAt(0).toUpperCase()}
+            {/* Avatar dengan Fitur Upload */}
+            <div className="relative flex-shrink-0 flex flex-col items-center">
+              <img 
+                src={user.avatar_url || `https://api.dicebear.com/9.x/avataaars/svg?seed=${encodeURIComponent(user.name)}&backgroundColor=b6e3f4`}
+                alt={user.name}
+                className="w-20 h-20 rounded-full bg-white/20 border-4 border-white/40 object-cover shadow-md"
+              />
+              <label className="mt-3 bg-white/20 hover:bg-white/30 border border-white/40 px-3 py-1.5 rounded-full text-[10px] font-bold cursor-pointer transition-colors flex items-center gap-1.5">
+                <FaEdit size={12} />
+                Ubah Foto
+                <input 
+                  type="file" 
+                  accept="image/*" 
+                  className="hidden" 
+                  onChange={async (e) => {
+                    const file = e.target.files[0];
+                    if (!file) return;
+                    if (file.size > 2 * 1024 * 1024) {
+                      showAlert("error", "Ukuran maksimal foto adalah 2MB.");
+                      return;
+                    }
+                    const reader = new FileReader();
+                    reader.onload = async (event) => {
+                      const base64 = event.target.result;
+                      try {
+                        showAlert("success", "Sedang mengunggah foto...");
+                        const { default: axios } = await import("axios");
+                        const API_URL = "https://pnpdzlpxlathfnfzgdol.supabase.co/rest/v1/users";
+                        const API_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBucGR6bHB4bGF0aGZuZnpnZG9sIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODEzMzg3MTAsImV4cCI6MjA5NjkxNDcxMH0.wQ6qy7pi1oPUcp0t-oCNyfUPirlZHew-gnfXdt7yc90";
+                        await axios.patch(`${API_URL}?id=eq.${user.id}`, { avatar_url: base64 }, { headers: { apikey: API_KEY, Authorization: `Bearer ${API_KEY}`, "Content-Type": "application/json", Prefer: "return=minimal" } });
+                        const updated = { ...user, avatar_url: base64 };
+                        localStorage.setItem("userSession", JSON.stringify(updated));
+                        setUser(updated);
+                        showAlert("success", "Foto profil berhasil diperbarui!");
+                      } catch (error) {
+                        console.error(error);
+                        showAlert("error", "Gagal memperbarui foto. Pastikan kolom avatar_url (tipe text) sudah ada di database Supabase.");
+                      }
+                    };
+                    reader.readAsDataURL(file);
+                  }} 
+                />
+              </label>
             </div>
 
             <div className="flex-1 text-center md:text-left">
@@ -127,19 +151,29 @@ export default function Profile() {
               <h1 className="text-3xl font-black mb-1">{user.name}</h1>
               <p className="text-white/70 text-sm">{user.email}</p>
               <div className="flex items-center justify-center md:justify-start gap-2 mt-3">
-                <span className="text-lg">{currentTier.icon}</span>
-                <span className="font-bold text-sm bg-white/20 px-3 py-1 rounded-full">
-                  {currentTier.name} Member
-                </span>
+                {user.role === "admin" ? (
+                  <span className="font-bold text-sm bg-[#E53E3E]/20 text-[#FFD1D1] px-3 py-1 rounded-full flex items-center gap-2 border border-[#E53E3E]/50">
+                    <FaShieldAlt /> Administrator
+                  </span>
+                ) : (
+                  <>
+                    <span className="text-lg">{currentTier.icon}</span>
+                    <span className="font-bold text-sm bg-white/20 px-3 py-1 rounded-full">
+                      {currentTier.name} Member
+                    </span>
+                  </>
+                )}
               </div>
             </div>
 
-            {/* Poin */}
-            <div className="text-center bg-white/10 backdrop-blur-sm px-6 py-4 rounded-[15px] border border-white/20 flex-shrink-0">
-              <p className="text-white/70 text-xs font-bold uppercase tracking-wider mb-1">Total Poin</p>
-              <p className="text-4xl font-black">{points.toLocaleString("id-ID")}</p>
-              <p className="text-white/70 text-xs mt-1">Capella Points</p>
-            </div>
+            {/* Poin (Hanya Member) */}
+            {user.role !== "admin" && (
+              <div className="text-center bg-white/10 backdrop-blur-sm px-6 py-4 rounded-[15px] border border-white/20 flex-shrink-0">
+                <p className="text-white/70 text-xs font-bold uppercase tracking-wider mb-1">Total Poin</p>
+                <p className="text-4xl font-black">{points.toLocaleString("id-ID")}</p>
+                <p className="text-white/70 text-xs mt-1">Capella Points</p>
+              </div>
+            )}
           </div>
         </div>
 

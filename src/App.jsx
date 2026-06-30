@@ -1,5 +1,5 @@
-import React, { Suspense } from "react";
-import { Routes, Route } from "react-router-dom";
+import React, { Suspense, useEffect } from "react";
+import { Routes, Route, useLocation } from "react-router-dom";
 
 // Layouts
 import MainLayout from "./layouts/MainLayout";
@@ -20,6 +20,7 @@ const Reviews = React.lazy(() => import("./pages/Reviews"));
 const Inventori = React.lazy(() => import("./pages/Inventori"));
 const InventoriDetail = React.lazy(() => import("./pages/InventoriDetail"));
 const Notes = React.lazy(() => import("./pages/Notes"));
+const Profile = React.lazy(() => import("./pages/Profile"));
 
 // Member Pages
 const MemberDashboard = React.lazy(() => import("./pages/MemberDashboard"));
@@ -30,11 +31,52 @@ const Login = React.lazy(() => import("./pages/auth/Login"));
 const Register = React.lazy(() => import("./pages/auth/Register"));
 const Forgot = React.lazy(() => import("./pages/auth/Forgot"));
 
+function DynamicTitle() {
+  const location = useLocation();
+
+  useEffect(() => {
+    const path = location.pathname;
+    let title = "Capella Hotel"; // Default untuk halaman utama / landing page
+
+    if (path.startsWith("/dashboard")) {
+      title = "Capella - Admin Dashboard";
+    } else if (path.startsWith("/bookings")) {
+      title = "Capella - Bookings";
+    } else if (path.startsWith("/guests")) {
+      title = "Capella - Guests";
+    } else if (path.startsWith("/users")) {
+      title = "Capella - Users";
+    } else if (path.startsWith("/inventory")) {
+      title = "Capella - Inventory";
+    } else if (path.startsWith("/reviews")) {
+      title = "Capella - Reviews";
+    } else if (path.startsWith("/notes")) {
+      title = "Capella - Notes";
+    } else if (path.startsWith("/member")) {
+      title = "Capella - Member Dashboard";
+    } else if (path.startsWith("/rewards")) {
+      title = "Capella - Rewards";
+    } else if (path.startsWith("/login")) {
+      title = "Capella - Login";
+    } else if (path.startsWith("/register")) {
+      title = "Capella - Register";
+    } else if (path.startsWith("/forgot")) {
+      title = "Capella - Forgot Password";
+    }
+
+    document.title = title;
+  }, [location]);
+
+  return null;
+}
+
 export default function App() {
   return (
-    <Suspense fallback={<Loading />}>
-      <Routes>
-        
+    <>
+      <DynamicTitle />
+      <Suspense fallback={<Loading />}>
+        <Routes>
+          
         {/* PUBLIC ROUTE (Hanya menggunakan GuestLayout) */}
         <Route element={<GuestLayout />}>
           <Route path="/" element={<LandingPage />} />
@@ -44,6 +86,7 @@ export default function App() {
         {/* MAIN LAYOUT (Admin Panel) */}
         <Route element={<MainLayout />}>
           <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/profile" element={<Profile />} />
           <Route path="/bookings" element={<Bookings />} />
           <Route path="/guests" element={<Guests />} />
           <Route path="/users" element={<Users />} />
@@ -56,6 +99,7 @@ export default function App() {
         {/* MEMBER LAYOUT (Member Area) */}
         <Route element={<MemberLayout />}>
           <Route path="/member" element={<MemberDashboard />} />
+          <Route path="/profile" element={<Profile />} />
           <Route path="/rewards" element={<RewardsPage />} />
         </Route>
 
@@ -69,5 +113,6 @@ export default function App() {
         <Route path="*" element={<NotFound />} />
       </Routes>
     </Suspense>
+    </>
   );
 }
