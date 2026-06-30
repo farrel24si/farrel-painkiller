@@ -35,5 +35,10 @@ export const usersAPI = {
   // 4. Fungsi Hapus User (Untuk Halaman Admin Nanti)
   async deleteUser(id) {
     await axios.delete(`${API_URL}?id=eq.${id}`, { headers });
+  },
+
+  // 5. Fungsi Update Role
+  async updateUserRole(id, role) {
+    await axios.patch(`${API_URL}?id=eq.${id}`, { role }, { headers: { ...headers, Prefer: "return=minimal" } });
   }
 };

@@ -4,6 +4,7 @@ import InputField from "../components/InputField";
 import SelectField from "../components/SelectField";
 import Alert from "../components/Alert";
 import supabase from "../lib/supabaseClient";
+import { FaChevronDown } from "react-icons/fa";
 
 export default function Bookings() {
   const [showForm, setShowForm] = useState(false);
@@ -119,7 +120,7 @@ export default function Bookings() {
     }
   };
 
-  const tableHeaders = ["Booking ID", "Guest Name", "Room Type", "Check-in Date", "Status", "Action"];
+  const tableHeaders = ["Booking ID", "Guest Name", "Room Type", "Check-in Date", "Status"];
 
   return (
     <div className="flex-1 overflow-y-auto bg-[#F8F9FA] font-['Helvetica'] min-h-screen">
@@ -171,12 +172,12 @@ export default function Bookings() {
               <tbody>
                 {isFetching && (
                   <tr>
-                    <td colSpan={6} className="py-12 text-center text-sm font-medium text-gray-400">Loading bookings data...</td>
+                    <td colSpan={5} className="py-12 text-center text-sm font-medium text-gray-400">Loading bookings data...</td>
                   </tr>
                 )}
                 {!isFetching && bookingsList.length === 0 && (
                   <tr>
-                    <td colSpan={6} className="py-12 text-center text-sm font-medium text-gray-400">No bookings found.</td>
+                    <td colSpan={5} className="py-12 text-center text-sm font-medium text-gray-400">No bookings found.</td>
                   </tr>
                 )}
                 {!isFetching && bookingsList.map((booking) => (
@@ -190,23 +191,7 @@ export default function Bookings() {
                     <td className="py-4 px-6 text-sm text-gray-500 font-medium">{booking.roomType}</td>
                     <td className="py-4 px-6 text-sm text-gray-500 font-medium">{booking.checkIn}</td>
                     <td className="py-4 px-6">
-                      <span className={`px-3 py-1.5 rounded-full text-[10px] uppercase font-bold tracking-widest ${
-                        booking.status === "Checked-In" ? "text-[#48BB78] bg-[#48BB78]/10" :
-                        booking.status === "Checked-Out" ? "text-gray-500 bg-gray-100" :
-                        booking.status === "Confirmed" ? "text-[#3BCBBE] bg-[#3BCBBE]/10" :
-                        booking.status === "Cancelled" ? "text-[#E53E3E] bg-[#E53E3E]/10" : "text-[#F5A623] bg-[#F5A623]/10"
-                      }`}>{booking.status}</span>
-                    </td>
-                    <td className="py-4 px-6">
-                      <select 
-                        className="text-xs bg-white border border-gray-200 rounded-lg px-3 py-2 outline-none focus:border-[#3BCBBE] text-gray-700 shadow-sm transition-colors cursor-pointer"
-                        value={booking.status}
-                        onChange={(e) => updateStatus(booking.id, e.target.value)}
-                      >
-                        {statusOptions.map(opt => (
-                          <option key={opt.value} value={opt.value}>{opt.label}</option>
-                        ))}
-                      </select>
+                      <StatusDropdown booking={booking} onUpdate={updateStatus} options={statusOptions} />
                     </td>
                   </tr>
                 ))}
@@ -215,6 +200,65 @@ export default function Bookings() {
           </div>
         </div>
       </div>
+    </div>
+  );
+}
+
+// Komponen Custom Dropdown untuk Status Booking
+function StatusDropdown({ booking, onUpdate, options }) {
+  const [open, setOpen] = useState(false);
+  const currentStatus = booking.status || 'Pending';
+
+  useEffect(() => {
+    const handleOutsideClick = () => setOpen(false);
+    if (open) document.addEventListener("click", handleOutsideClick);
+    return () => document.removeEventListener("click", handleOutsideClick);
+  }, [open]);
+
+  const getColorClass = (status) => {
+    switch(status) {
+      case "Checked-In": return "text-[#48BB78] bg-[#48BB78]/10 border-[#48BB78]/30 hover:bg-[#48BB78]/20";
+      case "Checked-Out": return "text-gray-500 bg-gray-100 border-gray-200 hover:bg-gray-200";
+      case "Confirmed": return "text-[#3BCBBE] bg-[#3BCBBE]/10 border-[#3BCBBE]/30 hover:bg-[#3BCBBE]/20";
+      case "Cancelled": return "text-[#E53E3E] bg-[#E53E3E]/10 border-[#E53E3E]/30 hover:bg-[#E53E3E]/20";
+      default: return "text-[#F5A623] bg-[#F5A623]/10 border-[#F5A623]/30 hover:bg-[#F5A623]/20";
+    }
+  };
+
+  const getTextColor = (status) => {
+    switch(status) {
+      case "Checked-In": return "text-[#48BB78]";
+      case "Checked-Out": return "text-gray-500";
+      case "Confirmed": return "text-[#3BCBBE]";
+      case "Cancelled": return "text-[#E53E3E]";
+      default: return "text-[#F5A623]";
+    }
+  };
+
+  return (
+    <div className="relative inline-block w-36" onClick={(e) => e.stopPropagation()}>
+      <button
+        onClick={() => setOpen(!open)}
+        className={`w-full flex items-center justify-between font-bold text-[10px] uppercase tracking-wider px-3 py-2 rounded-full outline-none cursor-pointer border shadow-sm transition-all ${getColorClass(currentStatus)}`}
+      >
+        <span>{currentStatus}</span>
+        <FaChevronDown className={`text-[10px] transition-transform duration-200 ${open ? 'rotate-180' : ''}`} />
+      </button>
+
+      {open && (
+        <div className="absolute z-50 mt-2 w-36 bg-white border border-gray-100 rounded-xl shadow-xl overflow-hidden py-1 right-0 top-full animate-in fade-in slide-in-from-top-2 duration-200">
+          {options.map(opt => (
+            <button
+              key={opt.value}
+              onClick={() => { onUpdate(booking.id, opt.value); setOpen(false); }}
+              className={`w-full text-left px-4 py-2.5 text-[10px] font-bold uppercase tracking-wider transition-colors
+                ${currentStatus === opt.value ? getTextColor(opt.value) + ' bg-gray-50' : 'text-gray-600 hover:bg-gray-50'}`}
+            >
+              {opt.label}
+            </button>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

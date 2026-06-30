@@ -9,6 +9,8 @@ const routeMeta = {
   "/users":     { title: "User Management",  breadcrumb: ["Capella", "Users"] },
   "/inventory": { title: "Inventory",        breadcrumb: ["Capella", "Inventory"] },
   "/reviews":   { title: "Reviews",          breadcrumb: ["Capella", "Reviews"] },
+  "/profile":   { title: "Profil Saya",      breadcrumb: ["Capella", "Profil"] },
+  "/notes":     { title: "Internal Notes",   breadcrumb: ["Capella", "Notes"] },
 };
 
 export default function MainLayout() {

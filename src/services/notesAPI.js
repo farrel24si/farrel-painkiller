@@ -24,5 +24,9 @@ export const notesAPI = {
 
   async deleteNote(id) {
     await axios.delete(`${API_URL}?id=eq.${id}`, { headers });
+  },
+
+  async updateNoteStatus(id, status) {
+    await axios.patch(`${API_URL}?id=eq.${id}`, { status }, { headers: { ...headers, Prefer: "return=minimal" } });
   }
 };

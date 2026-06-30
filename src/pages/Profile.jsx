@@ -277,7 +277,7 @@ function ProfileTab({ user, setUser, showAlert }) {
   };
 
   return (
-    <div className="max-w-lg">
+    <div className="w-full">
       <div className="flex items-center justify-between mb-6">
         <div>
           <h2 className="text-xl font-bold text-gray-800">Informasi Pribadi</h2>
@@ -441,7 +441,7 @@ function PasswordTab({ user, showAlert }) {
   );
 
   return (
-    <div className="max-w-lg">
+    <div className="w-full">
       <div className="mb-6">
         <h2 className="text-xl font-bold text-gray-800">Ganti Password</h2>
         <p className="text-sm text-gray-400 mt-0.5">Pastikan password baru kuat dan mudah diingat</p>
