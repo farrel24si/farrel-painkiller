@@ -4,6 +4,7 @@ import { Mail, Lock, Eye, EyeOff, User, ArrowLeft } from "lucide-react";
 import { usersAPI } from "../../services/usersAPI";
 import { motion } from "framer-motion";
 import Alert from "../../components/Alert";
+import logo from "../../assets/logo1.png";
 
 export default function Register() {
   const navigate = useNavigate();
@@ -83,7 +84,7 @@ export default function Register() {
           {/* Logo di kiri atas */}
           <div className="flex items-center space-x-2">
             <img
-              src="src/assets/logo1.png"
+              src={logo}
               alt="Capella Hotel"
               className="h-8 w-auto"
             />
@@ -107,7 +108,7 @@ export default function Register() {
         <div className="w-full max-w-md bg-white rounded-3xl shadow-xl p-6 md:p-8 animate-fade-in-up">
           {/* Logo mobile */}
           <div className="lg:hidden flex justify-center mb-4">
-            <img src="/assets/logo.png" alt="Capella" className="h-10 w-auto" />
+            <img src={logo} alt="Capella" className="h-10 w-auto" />
           </div>
 
           <div className="text-center mb-5">
