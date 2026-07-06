@@ -43,6 +43,23 @@ export default function FloatingChat() {
     return () => window.removeEventListener("mousedown", handleClickOutside);
   }, [isOpen]);
 
+  const generateLocalResponse = (text) => {
+    const t = text.toLowerCase();
+    if (t.includes("kamar") || t.includes("harga") || t.includes("pesan") || t.includes("booking") || t.includes("suite") || t.includes("room")) {
+      return "Untuk pilihan akomodasi, kami memiliki Deluxe Suite ($450), Standard Room ($150), dan Presidential Suite ($1,200). Anda dapat melakukan reservasi dengan menekan menu 'Rooms' atau langsung dari Member Dashboard.";
+    } else if (t.includes("fasilitas") || t.includes("kolam") || t.includes("spa") || t.includes("gym") || t.includes("wifi")) {
+      return "Fasilitas kelas dunia kami meliputi Infinity Pool, Holistic Spa, Fitness Center, Fine Dining, dan layanan Wi-Fi berkecepatan tinggi gratis di seluruh area hotel.";
+    } else if (t.includes("lokasi") || t.includes("alamat") || t.includes("dimana") || t.includes("letak")) {
+      return "Capella Hotel berlokasi di Jl. Sudirman No. 45, Jakarta Pusat 10220. Letaknya sangat strategis di pusat kawasan bisnis dan hiburan.";
+    } else if (t.includes("halo") || t.includes("hai") || t.includes("pagi") || t.includes("siang") || t.includes("malam")) {
+      return "Halo! Selamat datang di Capella Hotel. Ada yang bisa saya bantu terkait reservasi atau informasi fasilitas kami?";
+    } else if (t.includes("terima kasih") || t.includes("thanks") || t.includes("makasih")) {
+      return "Dengan senang hati! Jangan ragu untuk bertanya lagi jika Anda membutuhkan bantuan lainnya.";
+    } else {
+      return "Maaf, saya belum sepenuhnya mengerti. Sebagai asisten SAHAJA AI, saya dapat membantu Anda dengan informasi mengenai ketersediaan kamar, fasilitas hotel, atau lokasi kami.";
+    }
+  };
+
   const handleSend = async (e) => {
     e.preventDefault();
     if (!input.trim()) return;
@@ -52,42 +69,12 @@ export default function FloatingChat() {
     setInput("");
     setIsLoading(true);
 
-    try {
-      const systemPrompt = {
-        role: "system",
-        content: "Kamu adalah asisten virtual SAHAJA AI untuk website hotel 'Capella Hotel'. Jawablah dengan ramah, elegan, profesional, dan gunakan bahasa Indonesia yang sopan. Informasi hotel: Kamar yang tersedia adalah Deluxe Suite ($450), Standard Room ($150), dan Presidential Suite ($1,200). Fasilitas mencakup Kolam Renang, Spa & Sauna, Fitness Center, Restoran, Parkir Gratis, dan Wi-Fi Cepat. Arahkan pengguna untuk melakukan 'Cek Ketersediaan' di form atas jika ingin memesan kamar."
-      };
-
-      const apiUrl = import.meta.env.VITE_CEREBRAS_API_URL;
-      const apiKey = import.meta.env.VITE_CEREBRAS_API_KEY;
-
-      const response = await axios.post(
-        apiUrl,
-        {
-          model: "zai-glm-4.7", 
-          messages: [systemPrompt, ...messages, userMessage],
-          temperature: 0.7,
-        },
-        {
-          headers: {
-            "Authorization": `Bearer ${apiKey}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
-
-      const aiMessage = { role: "assistant", content: response.data.choices[0].message.content };
+    setTimeout(() => {
+      const responseText = generateLocalResponse(userMessage.content);
+      const aiMessage = { role: "assistant", content: responseText };
       setMessages((prev) => [...prev, aiMessage]);
-    } catch (error) {
-      if (error.response) {
-        console.error("Detail API Error:", error.response.data);
-      } else {
-        console.error("Network/CORS Error:", error.message);
-      }
-      setMessages((prev) => [...prev, { role: "assistant", content: "Maaf, sistem sedang sibuk. Silakan hubungi kami via WhatsApp atau coba beberapa saat lagi." }]);
-    } finally {
       setIsLoading(false);
-    }
+    }, 1200);
   };
 
   return (
@@ -97,41 +84,42 @@ export default function FloatingChat() {
         <div ref={chatRef} className="absolute bottom-20 right-0 bg-white/95 backdrop-blur-xl border border-gray-100 shadow-2xl rounded-3xl w-[350px] h-[500px] flex flex-col overflow-hidden mb-4 transition-all duration-300 transform origin-bottom-right">
           
           {/* Header */}
-          <div className="bg-gradient-to-r from-[#313860] to-[#3BCBBE] p-4 flex justify-between items-center text-white rounded-t-3xl">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm border border-white/30 p-1">
+          <div className="bg-[#0a0f1e] p-5 flex justify-between items-center text-white rounded-t-3xl border-b border-gray-800 relative overflow-hidden">
+            <div className="absolute inset-0 bg-gradient-to-r from-[#3BCBBE]/20 to-[#F5A623]/10 opacity-70" />
+            <div className="flex items-center gap-4 relative z-10">
+              <div className="w-12 h-12 bg-white/10 rounded-full flex items-center justify-center backdrop-blur-md border border-white/20 p-1 shadow-[0_0_15px_rgba(59,203,190,0.3)]">
                 <img 
                   src={AI_LOGO_URL} 
                   alt="Capella AI" 
-                  className="w-full h-full object-contain"
+                  className="w-full h-full object-contain drop-shadow-md"
                 />
               </div>
               <div>
-                <h3 className="font-bold text-sm">Capella Hotel X SAHAJA AI</h3>
-                <p className="text-[10px] text-teal-100 flex items-center gap-1">
-                  <span className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></span> Online
+                <h3 className="font-bold text-sm font-serif tracking-wider text-white">SAHAJA AI</h3>
+                <p className="text-[10px] text-[#3BCBBE] flex items-center gap-1.5 font-bold uppercase tracking-widest mt-0.5">
+                  <span className="w-1.5 h-1.5 bg-[#3BCBBE] rounded-full animate-pulse shadow-[0_0_5px_#3BCBBE]"></span> Online
                 </p>
               </div>
             </div>
-            <button onClick={() => setIsOpen(false)} className="text-white/80 hover:text-white transition-colors">
-              <FaTimes className="text-xl" />
+            <button onClick={() => setIsOpen(false)} className="text-white/60 hover:text-white transition-colors relative z-10 bg-white/5 p-2 rounded-full hover:bg-white/20">
+              <FaTimes className="text-sm" />
             </button>
           </div>
 
           {/* Chat History */}
-          <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-slate-50/50">
+          <div className="flex-1 overflow-y-auto p-5 space-y-5 bg-[#F8F9FA]">
             {messages.map((msg, index) => (
               <div key={index} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
-                <div className="flex items-end gap-2">
+                <div className="flex items-end gap-3 max-w-[85%]">
                   {msg.role === "assistant" && (
-                    <div className="w-7 h-7 bg-white rounded-full flex items-center justify-center shadow-sm border border-slate-100 p-0.5 flex-shrink-0">
+                    <div className="w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-sm border border-gray-100 p-1 flex-shrink-0">
                       <img src={AI_LOGO_URL} alt="AI" className="w-full h-full object-contain"/>
                     </div>
                   )}
-                  <div className={`max-w-[80%] p-3 text-sm shadow-sm ${
+                  <div className={`p-4 text-[13px] leading-relaxed shadow-sm ${
                     msg.role === "user" 
-                      ? "bg-[#3BCBBE] text-white rounded-2xl rounded-tr-sm" 
-                      : "bg-white border border-slate-100 text-slate-700 rounded-2xl rounded-tl-sm"
+                      ? "bg-[#0a0f1e] text-white rounded-2xl rounded-br-sm shadow-md" 
+                      : "bg-white border border-gray-100 text-gray-700 rounded-2xl rounded-bl-sm"
                   }`}>
                     {msg.content}
                   </div>
@@ -158,21 +146,21 @@ export default function FloatingChat() {
           </div>
 
           {/* Input Area */}
-          <form onSubmit={handleSend} className="p-4 bg-white border-t border-slate-100 flex gap-2 rounded-b-3xl">
+          <form onSubmit={handleSend} className="p-4 bg-white border-t border-gray-100 flex gap-3 rounded-b-3xl">
             <input
               type="text"
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              placeholder="Tanya seputar fasilitas..."
-              className="flex-1 bg-slate-50 border border-slate-200 rounded-full px-4 py-2 text-sm outline-none focus:border-[#3BCBBE] focus:bg-white transition-all"
+              placeholder="Tanyakan sesuatu..."
+              className="flex-1 bg-gray-50 border border-gray-100 rounded-full px-5 py-3 text-sm outline-none focus:border-[#3BCBBE] focus:ring-2 focus:ring-[#3BCBBE]/20 focus:bg-white transition-all shadow-inner text-gray-700"
               disabled={isLoading}
             />
             <button 
               type="submit" 
               disabled={isLoading || !input.trim()}
-              className="w-10 h-10 bg-gradient-to-r from-[#313860] to-[#3BCBBE] text-white rounded-full flex items-center justify-center hover:opacity-90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-md"
+              className="w-12 h-12 bg-[#0a0f1e] hover:bg-[#1a243d] text-white rounded-full flex items-center justify-center transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-[0_4px_10px_rgba(0,0,0,0.15)] group flex-shrink-0"
             >
-              <FaPaperPlane className="text-xs" />
+              <FaPaperPlane className="text-sm text-[#3BCBBE] group-hover:text-white transition-colors group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
             </button>
           </form>
         </div>
@@ -181,7 +169,7 @@ export default function FloatingChat() {
       {/* Floating Button */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className={`${isOpen ? "scale-0 opacity-0 hidden" : "scale-100 opacity-100"} w-14 h-14 bg-gradient-to-r from-[#313860] to-[#3BCBBE] rounded-full flex items-center justify-center text-white shadow-xl shadow-[#3BCBBE]/30 hover:scale-110 transition-all duration-300 z-50`}
+        className={`${isOpen ? "scale-0 opacity-0 hidden" : "scale-100 opacity-100"} w-14 h-14 bg-[#0a0f1e] hover:bg-[#1a243d] rounded-full flex items-center justify-center text-[#3BCBBE] hover:text-white shadow-[0_8px_20px_rgba(10,15,30,0.4)] hover:shadow-[0_10px_25px_rgba(59,203,190,0.4)] hover:scale-110 transition-all duration-300 z-50 border border-gray-800`}
       >
         <FaCommentDots className="text-2xl" />
       </button>

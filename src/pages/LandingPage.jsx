@@ -116,6 +116,55 @@ const LandingPage = () => {
   const [toastMessage, setToastMessage] = useState("");
   const [isNavigating, setIsNavigating] = useState(false);
   const [openFaq, setOpenFaq] = useState(null);
+  
+  const dummyReviews = [
+    {
+      name: "Ayu Lestari",
+      photo: "https://randomuser.me/api/portraits/women/44.jpg",
+      rating: 5,
+      text: "Menginap di sini sungguh luar biasa! Staf sangat ramah, kamar bersih, dan sarapannya enak.",
+      room: "Deluxe Suite"
+    },
+    {
+      name: "Budi Santoso",
+      photo: "https://randomuser.me/api/portraits/men/32.jpg",
+      rating: 5,
+      text: "Pelayanan personal yang tak tertandingi. Saya selalu kembali ke sini setiap kali ke Jakarta.",
+      room: "Standard Room"
+    },
+    {
+      name: "Siti Rahayu",
+      photo: "https://randomuser.me/api/portraits/women/68.jpg",
+      rating: 5,
+      text: "Presidential Suite-nya luar biasa! Fasilitas lengkap dan butler-nya sangat profesional.",
+      room: "Presidential Suite"
+    },
+  ];
+  const [allReviews, setAllReviews] = useState(dummyReviews);
+
+  useEffect(() => {
+    const fetchReviews = async () => {
+      try {
+        const { reviewsAPI } = await import("../services/reviewsAPI");
+        const realReviews = await reviewsAPI.fetchReviews();
+        
+        // Map real reviews to match dummy structure
+        const mappedReal = realReviews.map(r => ({
+          name: r.user_name,
+          photo: r.user_photo,
+          rating: r.rating,
+          text: r.text,
+          room: r.room_type
+        }));
+        
+        // Combine real reviews first, then dummy, max 10 maybe? Or all of them.
+        setAllReviews([...mappedReal, ...dummyReviews].slice(0, 8)); // Tampilkan max 8 di landing page
+      } catch (error) {
+        console.error("Failed to fetch real reviews", error);
+      }
+    };
+    fetchReviews();
+  }, []);
 
   useEffect(() => {
     if (selectedRoom || selectedPromo || selectedPolicy) document.body.style.overflow = 'hidden';
@@ -170,29 +219,7 @@ const LandingPage = () => {
     },
   ];
 
-  const reviews = [
-    {
-      name: "Ayu Lestari",
-      photo: "https://randomuser.me/api/portraits/women/44.jpg",
-      rating: 5,
-      text: "Menginap di sini sungguh luar biasa! Staf sangat ramah, kamar bersih, dan sarapannya enak.",
-      response: "Terima kasih, Ayu! Kami senang Anda merasa seperti di rumah sendiri. 💚",
-    },
-    {
-      name: "Budi Santoso",
-      photo: "https://randomuser.me/api/portraits/men/32.jpg",
-      rating: 5,
-      text: "Pelayanan personal yang tak tertandingi. Saya selalu kembali ke sini setiap kali ke Jakarta.",
-      response: "Bapak Budi, kehadiran Anda selalu kami tunggu. Sampai bertemu lagi!",
-    },
-    {
-      name: "Siti Rahayu",
-      photo: "https://randomuser.me/api/portraits/women/68.jpg",
-      rating: 5,
-      text: "Presidential Suite-nya luar biasa! Fasilitas lengkap dan butler-nya sangat profesional.",
-      response: "Terima kasih, Siti! Kami selalu berusaha memberikan yang terbaik. 💚",
-    },
-  ];
+
 
   const galleryImages = [
     "https://images.unsplash.com/photo-1563911302283-d2bc129e7570?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
@@ -503,7 +530,7 @@ const LandingPage = () => {
             </h2>
           </div>
           <div className="grid md:grid-cols-2 gap-8">
-            {reviews.map((rev, idx) => (
+            {allReviews.map((rev, idx) => (
               <div
                 key={idx}
                 className="bg-white rounded-[32px] p-10 border border-gray-100 shadow-lg hover:shadow-2xl transition-all duration-300"
@@ -518,7 +545,7 @@ const LandingPage = () => {
                   <img src={rev.photo} alt={rev.name} className="w-14 h-14 rounded-full object-cover" />
                   <div>
                     <p className="font-bold text-gray-900">{rev.name}</p>
-                    <p className="text-sm text-gray-400 font-bold uppercase tracking-wider mt-1">{rev.room}</p>
+                    <p className="text-sm text-gray-400 font-bold uppercase tracking-wider mt-1">{rev.room || "Tamu Hotel"}</p>
                   </div>
                 </div>
               </div>

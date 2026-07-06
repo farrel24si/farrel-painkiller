@@ -70,6 +70,14 @@ export default function MemberDashboard() {
     checkOut: getTomorrowString(),
     guests: 2
   });
+
+  // Review states
+  const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
+  const [reviewBooking, setReviewBooking] = useState(null);
+  const [reviewRating, setReviewRating] = useState(5);
+  const [reviewText, setReviewText] = useState("");
+  const [reviewedBookings, setReviewedBookings] = useState({});
+
   
   // Hitung jumlah malam secara dinamis
   const calculateNights = () => {
@@ -111,6 +119,17 @@ export default function MemberDashboard() {
       
       setPointsBalance(balance);
       setCumulativePoints(cumulative);
+
+      try {
+        const { reviewsAPI } = await import("../services/reviewsAPI");
+        const userReviews = await reviewsAPI.fetchReviewsByUserId(userId);
+        const reviewedMap = {};
+        userReviews.forEach(r => reviewedMap[r.booking_id] = true);
+        setReviewedBookings(reviewedMap);
+      } catch (err) {
+        console.warn("Tabel reviews belum dibuat atau gagal diambil:", err);
+      }
+
     } catch (error) {
       console.error("Gagal mengambil data:", error);
     } finally {
@@ -128,10 +147,10 @@ export default function MemberDashboard() {
   }, [navigate]);
 
   useEffect(() => {
-    if (isBookingOpen) document.body.style.overflow = 'hidden';
+    if (isBookingOpen || isReviewModalOpen) document.body.style.overflow = 'hidden';
     else document.body.style.overflow = 'unset';
     return () => { document.body.style.overflow = 'unset'; };
-  }, [isBookingOpen]);
+  }, [isBookingOpen, isReviewModalOpen]);
 
   const showAlert = (type, msg) => {
     setAlert({ type, msg });
@@ -411,7 +430,7 @@ export default function MemberDashboard() {
                 <table className="w-full text-left min-w-[600px]">
                   <thead>
                     <tr>
-                      {["Akomodasi", "Tanggal", "Total", "Status"].map(h => (
+                      {["Akomodasi", "Tanggal", "Total", "Status", "Aksi"].map(h => (
                         <th key={h} className="pb-4 pt-6 px-6 text-[10px] font-bold text-gray-400 uppercase tracking-widest border-b border-gray-50">{h}</th>
                       ))}
                     </tr>
@@ -437,6 +456,25 @@ export default function MemberDashboard() {
                             <span className={`inline-flex items-center px-3 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${statusStyles[b.status] || statusStyles["Confirmed"]}`}>
                               {b.status}
                             </span>
+                          </td>
+                          <td className="py-5 px-6">
+                            {(b.status === "Checked-Out" || b.status === "Confirmed") && (
+                              reviewedBookings[b.id] ? (
+                                <span className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Sudah Diulas</span>
+                              ) : (
+                                <button
+                                  onClick={() => {
+                                    setReviewBooking(b);
+                                    setReviewRating(5);
+                                    setReviewText("");
+                                    setIsReviewModalOpen(true);
+                                  }}
+                                  className="text-[10px] font-bold text-[#3BCBBE] hover:text-[#2aa89d] uppercase tracking-wider underline cursor-pointer"
+                                >
+                                  Beri Ulasan
+                                </button>
+                              )
+                            )}
                           </td>
                         </tr>
                       ))
@@ -728,6 +766,86 @@ export default function MemberDashboard() {
                   </span>
                 </div>
               </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* ========================================================================= */}
+      {/* POP-UP (MODAL) REVIEW */}
+      {/* ========================================================================= */}
+      <AnimatePresence>
+        {isReviewModalOpen && reviewBooking && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+              onClick={() => setIsReviewModalOpen(false)}
+            />
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              className="relative bg-white w-full max-w-md rounded-[24px] shadow-2xl overflow-hidden z-10 p-8"
+            >
+              <div className="flex justify-between items-center mb-6">
+                <h3 className="text-xl font-bold font-serif text-gray-900">Beri Ulasan</h3>
+                <button onClick={() => setIsReviewModalOpen(false)} className="text-gray-400 hover:text-gray-600"><X size={20}/></button>
+              </div>
+              <p className="text-sm text-gray-500 mb-6 font-light">
+                Bagaimana pengalaman Anda menginap di <strong>{reviewBooking.roomType}</strong>?
+              </p>
+              
+              <div className="flex gap-2 mb-6 justify-center">
+                {[1, 2, 3, 4, 5].map(star => (
+                  <button key={star} onClick={() => setReviewRating(star)} className="cursor-pointer">
+                    <Star size={32} className={star <= reviewRating ? "text-[#F5A623] fill-[#F5A623]" : "text-gray-200"} />
+                  </button>
+                ))}
+              </div>
+              
+              <div className="mb-6">
+                <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1.5 block">Komentar</label>
+                <textarea 
+                  rows="4" 
+                  value={reviewText}
+                  onChange={(e) => setReviewText(e.target.value)}
+                  className="w-full text-sm bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 outline-none focus:border-[#3BCBBE] focus:ring-2 focus:ring-[#3BCBBE]/20 text-gray-700 resize-none transition-all"
+                  placeholder="Ceritakan pengalaman luar biasa Anda..."
+                ></textarea>
+              </div>
+              
+              <button 
+                onClick={async () => {
+                  if(!reviewText.trim()) {
+                    showAlert("error", "Komentar ulasan tidak boleh kosong.");
+                    return;
+                  }
+                  try {
+                    const { reviewsAPI } = await import("../services/reviewsAPI");
+                    await reviewsAPI.createReview({
+                      booking_id: reviewBooking.id,
+                      user_id: user.id,
+                      user_name: user.name,
+                      user_photo: user.avatar_url || `https://api.dicebear.com/9.x/avataaars/svg?seed=${encodeURIComponent(user.name)}&backgroundColor=b6e3f4`,
+                      room_type: reviewBooking.roomType,
+                      rating: reviewRating,
+                      text: reviewText
+                    });
+                    setReviewedBookings({...reviewedBookings, [reviewBooking.id]: true});
+                    showAlert("success", "Terima kasih! Ulasan Anda berhasil disimpan.");
+                    setIsReviewModalOpen(false);
+                  } catch (e) {
+                    console.error(e);
+                    showAlert("error", "Gagal menyimpan ulasan. Pastikan tabel reviews sudah dibuat.");
+                  }
+                }}
+                className="w-full bg-[#0F1729] hover:bg-[#1a2332] text-white py-3.5 rounded-xl text-xs font-bold uppercase tracking-widest shadow-md transition-all flex items-center justify-center cursor-pointer"
+              >
+                Kirim Ulasan
+              </button>
             </motion.div>
           </div>
         )}

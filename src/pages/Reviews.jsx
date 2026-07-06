@@ -14,17 +14,19 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 export default function Reviews() {
-  const reviewsData = [
-    { id: 1, name: "Budi Santoso", room: "Presidential Suite", rating: 5, text: "Pelayanan luar biasa! Kamar sangat bersih.", status: "Positive" },
-    { id: 2, name: "Siti Aminah", room: "Deluxe Suite", rating: 3, text: "AC butuh waktu lama untuk dingin. Sarapan enak.", status: "Neutral" },
-    { id: 3, name: "Andi Wijaya", room: "Standard Room", rating: 1, text: "Air panas tidak menyala di pagi hari.", status: "Negative" },
-    { id: 4, name: "Farrel", room: "Penthouse", rating: 5, text: "Fasilitas lengkap dan view sangat indah.", status: "Positive" },
-    { id: 5, name: "Nisa Sabyan", room: "Superior Room", rating: 4, text: "Nyaman dan tenang, cocok untuk istirahat.", status: "Positive" },
+  const dummyData = [
+    { id: 'dummy-1', name: "Budi Santoso", room: "Presidential Suite", rating: 5, text: "Pelayanan luar biasa! Kamar sangat bersih.", status: "Positive" },
+    { id: 'dummy-2', name: "Siti Aminah", room: "Deluxe Suite", rating: 3, text: "AC butuh waktu lama untuk dingin. Sarapan enak.", status: "Neutral" },
+    { id: 'dummy-3', name: "Andi Wijaya", room: "Standard Room", rating: 1, text: "Air panas tidak menyala di pagi hari.", status: "Negative" },
+    { id: 'dummy-4', name: "Farrel", room: "Penthouse", rating: 5, text: "Fasilitas lengkap dan view sangat indah.", status: "Positive" },
+    { id: 'dummy-5', name: "Nisa Sabyan", room: "Superior Room", rating: 4, text: "Nyaman dan tenang, cocok untuk istirahat.", status: "Positive" },
   ];
 
+  const [allReviews, setAllReviews] = useState(dummyData);
   const [searchTerm, setSearchTerm] = useState("");
   const [filterRating, setFilterRating] = useState("All"); 
-  const [filteredReviews, setFilteredReviews] = useState(reviewsData);
+  const [filteredReviews, setFilteredReviews] = useState(dummyData);
+  const [markedAsReviewed, setMarkedAsReviewed] = useState(new Set());
 
   const searchInputRef = useRef(null);
 
@@ -34,10 +36,31 @@ export default function Reviews() {
         searchInputRef.current.focus();
       }
     }, 100);
+
+    const fetchReviews = async () => {
+      try {
+        const { reviewsAPI } = await import("../services/reviewsAPI");
+        const realReviews = await reviewsAPI.fetchReviews();
+        
+        const mappedReal = realReviews.map(r => ({
+          id: r.id,
+          name: r.user_name,
+          room: r.room_type || "Akomodasi",
+          rating: r.rating,
+          text: r.text,
+          status: r.rating >= 4 ? "Positive" : r.rating === 3 ? "Neutral" : "Negative"
+        }));
+        
+        setAllReviews([...mappedReal, ...dummyData]);
+      } catch (error) {
+        console.error("Gagal mengambil ulasan:", error);
+      }
+    };
+    fetchReviews();
   }, []);
 
   useEffect(() => {
-    let results = reviewsData;
+    let results = allReviews;
     if (searchTerm !== "") {
       results = results.filter(review =>
         review.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -51,7 +74,7 @@ export default function Reviews() {
       results = results.filter(review => review.rating >= 1 && review.rating <= 3);
     }
     setFilteredReviews(results);
-  }, [searchTerm, filterRating]);
+  }, [searchTerm, filterRating, allReviews]);
 
   return (
     <div className="flex-1 overflow-y-auto bg-[#F8F9FA] font-['Helvetica'] min-h-screen">
@@ -143,8 +166,20 @@ export default function Reviews() {
                 <p className="text-sm text-gray-600 font-medium italic leading-relaxed">"{review.text}"</p>
                 
                 <div className="mt-auto pt-6">
-                  <button className="text-[10px] font-bold text-[#3BCBBE] uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1.5 hover:text-[#2ca89d]">
-                    <FaCheck size={10} /> Mark as Reviewed
+                  <button 
+                    onClick={() => {
+                      const newSet = new Set(markedAsReviewed);
+                      if (newSet.has(review.id)) newSet.delete(review.id);
+                      else newSet.add(review.id);
+                      setMarkedAsReviewed(newSet);
+                    }}
+                    className={`text-[10px] font-bold uppercase tracking-widest transition-opacity flex items-center gap-1.5 ${
+                      markedAsReviewed.has(review.id)
+                        ? "text-gray-400 opacity-100"
+                        : "text-[#3BCBBE] opacity-0 group-hover:opacity-100 hover:text-[#2ca89d]"
+                    }`}
+                  >
+                    <FaCheck size={10} /> {markedAsReviewed.has(review.id) ? "Reviewed" : "Mark as Reviewed"}
                   </button>
                 </div>
               </div>

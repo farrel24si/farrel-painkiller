@@ -86,18 +86,19 @@ export default function Register() {
             <img
               src={logo}
               alt="Capella Hotel"
-              className="h-8 w-auto"
+              className="h-12 md:h-14 w-auto drop-shadow-md hover:scale-105 transition-transform"
             />
             <span className="text-white text-xl font-bold tracking-widest"></span>
           </div>
 
           {/* Teks di bawah */}
-          <div className="text-white max-w-md animate-fade-in-up">
-            <h1 className="text-3xl font-semibold leading-tight">
-              Gabung Sekarang.<br />Nikmati Kemewahannya.
+          <div className="text-white max-w-lg animate-fade-in-up mb-10">
+            <h1 className="text-5xl md:text-6xl font-serif italic tracking-tight leading-[1.1] mb-6 drop-shadow-lg">
+              Gabung <span className="text-[#F5A623]">Sekarang</span>.<br />
+              Nikmati <span className="text-[#3BCBBE]">Kemewahannya</span>.
             </h1>
-            <p className="text-base opacity-90 mt-2 leading-relaxed">
-              Daftar dalam 30 detik. Dapatkan 500 Poin Capella pertama Anda sebagai hadiah selamat datang!
+            <p className="text-lg md:text-xl font-light opacity-90 leading-relaxed drop-shadow-md border-l-4 border-[#3BCBBE] pl-4">
+              Daftar dalam 30 detik. Dapatkan <span className="font-semibold text-white">500 Poin Capella</span> pertama Anda sebagai hadiah selamat datang!
             </p>
           </div>
         </div>
@@ -107,8 +108,8 @@ export default function Register() {
       <div className="w-full lg:w-1/2 flex items-center justify-center px-4 py-6">
         <div className="w-full max-w-md bg-white rounded-3xl shadow-xl p-6 md:p-8 animate-fade-in-up">
           {/* Logo mobile */}
-          <div className="lg:hidden flex justify-center mb-4">
-            <img src={logo} alt="Capella" className="h-10 w-auto" />
+          <div className="lg:hidden flex justify-center mb-6">
+            <img src={logo} alt="Capella" className="h-14 md:h-16 w-auto drop-shadow-sm" />
           </div>
 
           <div className="text-center mb-5">
