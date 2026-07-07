@@ -1,4 +1,5 @@
-import { Outlet, useLocation } from "react-router-dom";
+import { Outlet, useLocation, useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
 import Sidebar from "../components/Sidebar";
 import Header from "../components/Header";
 
@@ -15,6 +16,23 @@ const routeMeta = {
 
 export default function MainLayout() {
   const { pathname } = useLocation();
+  const navigate = useNavigate();
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    const session = localStorage.getItem("userSession");
+    if (!session) {
+      navigate("/login");
+    } else {
+      const parsedUser = JSON.parse(session);
+      if (parsedUser.role !== "admin") {
+        // Jika bukan admin, redirect ke area member
+        navigate("/member");
+      } else {
+        setUser(parsedUser);
+      }
+    }
+  }, [navigate]);
 
   // Handle dynamic route /inventory/:id
   const isInventoryDetail = pathname.startsWith("/inventory/") && pathname !== "/inventory";
@@ -22,6 +40,8 @@ export default function MainLayout() {
   const meta = isInventoryDetail
     ? { title: "Inventory Detail", breadcrumb: ["Capella", "Inventory", "Detail"] }
     : routeMeta[pathname] ?? { title: "Page", breadcrumb: ["Capella", "Page"] };
+
+  if (!user) return null;
 
   return (
     <div className="flex min-h-screen bg-gray-50">

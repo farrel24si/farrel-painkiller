@@ -40,12 +40,20 @@ function ReadingProgressBar() {
 function Header() {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [user, setUser] = useState(null);
 
   useEffect(() => {
     const handleScroll = () => {
       setScrolled(window.scrollY > 80);
     };
     window.addEventListener("scroll", handleScroll);
+
+    // Ambil session jika ada
+    const session = localStorage.getItem("userSession");
+    if (session) {
+      setUser(JSON.parse(session));
+    }
+    
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
@@ -85,19 +93,29 @@ function Header() {
         {/* ── BAGIAN KANAN: TOMBOL LOGIN & REGISTER ── */}
         <div className="hidden lg:flex flex-1 justify-end items-center gap-3">
           
-          {/* Tombol Login (Hover Glow & Teks Menyala) */}
-          <Button asChild className="bg-white hover:bg-white text-gray-800 text-sm px-6 py-2.5 rounded-full font-bold shadow-sm border border-gray-200 cursor-pointer transition-all duration-300 hover:border-[#3BCBBE]/50 hover:shadow-[0_0_15px_rgba(59,203,190,0.35)] hover:text-[#3BCBBE]">
-            <Link to="/login">
-              <FaUser className="mr-2 text-[#3BCBBE]" /> Login
-            </Link>
-          </Button>
+          {user ? (
+            <Button asChild className="bg-[#3BCBBE] hover:bg-[#4FD1C5] text-white text-sm px-6 py-2.5 rounded-full shadow-md cursor-pointer transition-all duration-300 hover:shadow-[0_0_20px_rgba(59,203,190,0.6)] hover:-translate-y-0.5">
+              <Link to={user.role === "admin" ? "/dashboard" : "/member"}>
+                <FaUser className="mr-2" /> Dashboard
+              </Link>
+            </Button>
+          ) : (
+            <>
+              {/* Tombol Login (Hover Glow & Teks Menyala) */}
+              <Button asChild className="bg-white hover:bg-white text-gray-800 text-sm px-6 py-2.5 rounded-full font-bold shadow-sm border border-gray-200 cursor-pointer transition-all duration-300 hover:border-[#3BCBBE]/50 hover:shadow-[0_0_15px_rgba(59,203,190,0.35)] hover:text-[#3BCBBE]">
+                <Link to="/login">
+                  <FaUser className="mr-2 text-[#3BCBBE]" /> Login
+                </Link>
+              </Button>
 
-          {/* Tombol Register (Hover Glow & Background Lebih Terang) */}
-          <Button asChild className="bg-[#3BCBBE] hover:bg-[#4FD1C5] text-white text-sm px-7 py-2.5 rounded-full shadow-md cursor-pointer transition-all duration-300 hover:shadow-[0_0_20px_rgba(59,203,190,0.6)] hover:-translate-y-0.5">
-            <Link to="/register">
-              Register
-            </Link>
-          </Button>
+              {/* Tombol Register (Hover Glow & Background Lebih Terang) */}
+              <Button asChild className="bg-[#3BCBBE] hover:bg-[#4FD1C5] text-white text-sm px-7 py-2.5 rounded-full shadow-md cursor-pointer transition-all duration-300 hover:shadow-[0_0_20px_rgba(59,203,190,0.6)] hover:-translate-y-0.5">
+                <Link to="/register">
+                  Register
+                </Link>
+              </Button>
+            </>
+          )}
           
         </div>
 
@@ -125,15 +143,25 @@ function Header() {
         <a href="/#contact" onClick={() => setIsOpen(false)} className="hover:text-[#3BCBBE]">Contact</a>
         <div className="h-px bg-gray-100 my-2"></div>
         
-        <Link to="/login" onClick={() => setIsOpen(false)} className="flex items-center gap-2 text-gray-800">
-          <FaUser className="text-[#3BCBBE]" /> Login
-        </Link>
-        
-        <Button asChild className="bg-[#3BCBBE] hover:bg-[#4FD1C5] text-white mt-2 w-full px-5 py-3 rounded-xl shadow-md cursor-pointer transition-all">
-          <Link to="/register" onClick={() => setIsOpen(false)}>
-            Register
-          </Link>
-        </Button>
+        {user ? (
+          <Button asChild className="bg-[#3BCBBE] hover:bg-[#4FD1C5] text-white mt-2 w-full px-5 py-3 rounded-xl shadow-md cursor-pointer transition-all">
+            <Link to={user.role === "admin" ? "/dashboard" : "/member"} onClick={() => setIsOpen(false)}>
+              <FaUser className="mr-2" /> Dashboard
+            </Link>
+          </Button>
+        ) : (
+          <>
+            <Link to="/login" onClick={() => setIsOpen(false)} className="flex items-center gap-2 text-gray-800">
+              <FaUser className="text-[#3BCBBE]" /> Login
+            </Link>
+            
+            <Button asChild className="bg-[#3BCBBE] hover:bg-[#4FD1C5] text-white mt-2 w-full px-5 py-3 rounded-xl shadow-md cursor-pointer transition-all">
+              <Link to="/register" onClick={() => setIsOpen(false)}>
+                Register
+              </Link>
+            </Button>
+          </>
+        )}
       </div>
 
       {/* Garis tipis teal → gold, muncul saat discroll */}
